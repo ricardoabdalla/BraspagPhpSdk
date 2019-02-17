@@ -4,6 +4,6 @@ namespace BraspagSdk\Common;
 
 abstract class Environment
 {
-    public const SANDBOX = 0;
-    public const PRODUCTION = 1;
+    const SANDBOX = 0;
+    const PRODUCTION = 1;
 }

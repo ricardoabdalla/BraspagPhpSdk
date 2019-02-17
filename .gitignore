@@ -82,6 +82,11 @@ fabric.properties
 .idea/sonarlint
 
 # End of https://www.gitignore.io/api/phpstorm
+
+composer.phar
+/vendor/
 \.DS_Store
+
+\.idea/modules\.xml
 
 \.idea/

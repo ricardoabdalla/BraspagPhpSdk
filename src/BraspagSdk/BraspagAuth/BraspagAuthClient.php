@@ -5,8 +5,9 @@ namespace BraspagSdk\BraspagAuth;
 use BraspagSdk\Common\Environment;
 use BraspagSdk\Common\Endpoints;
 use BraspagSdk\Common\OAuthGrantType;
-use BraspagSdk\Contracts\BraspagAuth\AccessTokenRequest;
 use BraspagSdk\Common\ClientOptions;
+use BraspagSdk\Contracts\BraspagAuth\AccessTokenRequest;
+use BraspagSdk\Contracts\BraspagAuth\AccessTokenResponse;
 use InvalidArgumentException;
 
 class BraspagAuthClient
@@ -68,6 +69,7 @@ class BraspagAuthClient
         curl_setopt($curl, CURLOPT_POSTFIELDS, $params);
 
         $response = curl_exec($curl);
+        $statusCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
         $err = curl_error($curl);
         curl_close($curl);
 
@@ -76,5 +78,12 @@ class BraspagAuthClient
         } else {
             echo $response;
         }
+
+        // Deserializar
+        $jsonResponse = AccessTokenResponse::fromJson($response);
+        $jsonResponse->HttpStatus = $statusCode;
+        return $jsonResponse;
+
+        // Preencher HTTP Status
     }
 }
