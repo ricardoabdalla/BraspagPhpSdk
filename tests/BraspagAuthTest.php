@@ -9,7 +9,7 @@ use BraspagSdk\Common\OAuthGrantType;
 use BraspagSdk\Contracts\BraspagAuth\AccessTokenRequest;
 use PHPUnit\Framework\TestCase;
 
-final class BraspagAuthTests extends TestCase
+final class BraspagAuthTest extends TestCase
 {
     /** @test */
     public function createAccessToken_forValidCredentials_returnsAccessToken()
