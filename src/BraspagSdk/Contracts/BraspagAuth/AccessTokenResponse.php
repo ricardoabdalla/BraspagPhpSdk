@@ -33,5 +33,11 @@ class AccessTokenResponse
         if (isset($dataProps['expires_in'])) {
             $this->ExpiresIn = $dataProps['expires_in'];
         }
+
+        if (isset($dataProps['error']))
+            $this->Error = $dataProps['error'];
+
+        if (isset($dataProps['error_description']))
+            $this->ErrorDescription = $dataProps['error_description'];
     }
 }

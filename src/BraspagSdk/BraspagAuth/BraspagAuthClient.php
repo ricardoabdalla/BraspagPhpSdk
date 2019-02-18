@@ -20,8 +20,6 @@ class BraspagAuthClient
             $this->url = Endpoints::BraspagAuthProduction;
         else
             $this->url = Endpoints::BraspagAuthSandbox;
-
-        $this->url .= "oauth2/token";
     }
 
     function CreateAccessToken(AccessTokenRequest $request)
@@ -50,13 +48,13 @@ class BraspagAuthClient
         if (empty($request->RefreshToken) || !isset($request->RefreshToken))
             $params .= "&scope=$request->Scope";
 
-
         $curl = curl_init();
 
+        curl_setopt($curl, CURLOPT_FAILONERROR, true);
         curl_setopt($curl, CURLOPT_POST, true);
         curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
         curl_setopt($curl, CURLOPT_USERPWD, $request->ClientId . ":" . $request->ClientSecret);
-        curl_setopt($curl, CURLOPT_URL, $this->url);
+        curl_setopt($curl, CURLOPT_URL, $this->url . "oauth2/token");
 
         $headers = array(
             'Content-Type: application/x-www-form-urlencoded',
@@ -65,6 +63,7 @@ class BraspagAuthClient
         );
 
         curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($curl, CURLINFO_HEADER_OUT, true);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($curl, CURLOPT_POSTFIELDS, $params);
 
@@ -73,17 +72,20 @@ class BraspagAuthClient
         $err = curl_error($curl);
         curl_close($curl);
 
-        if ($err) {
-            echo "cURL Error #:" . $err;
-        } else {
-            echo $response;
+        if($response)
+        {
+            $jsonResponse = AccessTokenResponse::fromJson($response);
+            $jsonResponse->HttpStatus = $statusCode;
+            return $jsonResponse;
         }
 
-        // Deserializar
-        $jsonResponse = AccessTokenResponse::fromJson($response);
-        $jsonResponse->HttpStatus = $statusCode;
-        return $jsonResponse;
-
-        // Preencher HTTP Status
+        else
+        {
+            $errorResponse = new AccessTokenResponse();
+            $errorResponse->HttpStatus = $statusCode;
+            $errorResponse->Error = $err;
+            $errorResponse->ErrorDescription = $err;
+            return $errorResponse;
+        }
     }
 }
