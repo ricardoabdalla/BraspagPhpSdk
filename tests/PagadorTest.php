@@ -14,7 +14,7 @@ final class PagadorClientTest extends TestCase
     /** @test */
     public function createSale_forValidCredentials_returnsSaleResponse()
     {
-        $credentials = new MerchantCredentials("4b83f3c7-7787-47d1-8a62-568f71f5ab02", "ROJBOAQUNCBHWPUETLDQIFYHBYRCIIFKAMGEGTXB");
+        $credentials = new MerchantCredentials("33B6AC07-C48D-4F13-A5B9-D3516A378A0C", "d6Rb3OParKvLfzNrURzwcT0f1lzNazS1o19yP6Y8");
 
         $pagadorClientOptions = new PagadorClientOptions($credentials, Environment::SANDBOX);
         $pagadorClientOptions->Environment = Environment::SANDBOX;
