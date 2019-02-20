@@ -72,7 +72,6 @@ class BraspagAuthClient
             }
 
             curl_close($curl);
-            $response = null;
         }
         catch (Exception $e)
         {
