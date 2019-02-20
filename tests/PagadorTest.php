@@ -52,6 +52,7 @@ final class PagadorClientTest extends TestCase
         $sut = new PagadorClient($pagadorClientOptions);
         $result = $sut->CreateSale($saleRequest);
         $this->assertEquals(201, $result->HttpStatus);
+        $this->assertEquals("Successful", $result->Payment->ReasonMessage);
         $this->assertNotNull($result->MerchantOrderId);
     }
 }

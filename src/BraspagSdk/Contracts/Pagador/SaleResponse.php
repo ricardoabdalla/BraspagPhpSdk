@@ -14,6 +14,8 @@ class SaleResponse
 
     public $Customer;
 
+    public $Payment;
+
     public static function fromJson($json)
     {
         $object = json_decode($json);
@@ -24,13 +26,8 @@ class SaleResponse
 
     public function populate(\stdClass $data)
     {
-        $dataProps = get_object_vars($data);
-        $this->Customer = new CustomerData();
-
-        if (isset($dataProps['MerchantOrderId']))
-            $this->MerchantOrderId = $dataProps['MerchantOrderId'];
-
-        if (isset($dataProps['Customer']->Name))
-            $this->Customer->Name = $dataProps["Customer"]->Name;
+        foreach($data as $key => $val)
+            if(property_exists(__CLASS__,$key))
+                $this->$key = $val;
     }
 }
