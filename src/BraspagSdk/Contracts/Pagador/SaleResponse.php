@@ -18,16 +18,13 @@ class SaleResponse
 
     public static function fromJson($json)
     {
-        $object = json_decode($json);
         $response = new SaleResponse();
-        $response->populate($object);
-        return $response;
-    }
+        $jsonArray = json_decode($json);
 
-    public function populate(\stdClass $data)
-    {
-        foreach($data as $key => $val)
-            if(property_exists(__CLASS__,$key))
-                $this->$key = $val;
+        foreach ($jsonArray as $key => $val)
+            if (property_exists(__CLASS__, $key))
+                $response->$key = $val;
+
+        return $response;
     }
 }
