@@ -15,7 +15,7 @@ class PagadorClientOptions extends ClientOptions
      * @param $credentials
      * @param $Environment
      */
-    public function __construct(MerchantCredentials $credentials, $Environment)
+    public function __construct(MerchantCredentials $credentials, $Environment = null)
     {
         $this->credentials = $credentials;
         $this->Environment = $Environment;

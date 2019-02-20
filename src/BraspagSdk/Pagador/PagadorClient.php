@@ -31,15 +31,15 @@ class PagadorClient
             throw new InvalidArgumentException("Sale request is null");
 
         if (empty($this->credentials) && empty($merchantCredentials))
-            throw new InvalidArgumentException("Invalid credentials: credentials are null or empty");
+            throw new InvalidArgumentException("Credentials are null");
 
         $currentCredentials = $this->credentials ?: $merchantCredentials;
 
         if (empty($currentCredentials->MerchantId))
-            throw new InvalidArgumentException("Invalid credentials: MerchantId are null or empty");
+            throw new InvalidArgumentException("Invalid credentials: MerchantId is null");
 
         if (empty($currentCredentials->MerchantKey))
-            throw new InvalidArgumentException("Invalid credentials: MerchantKey are null or empty");
+            throw new InvalidArgumentException("Invalid credentials: MerchantKey is null");
 
         try {
             $curl = curl_init();
@@ -48,6 +48,8 @@ class PagadorClient
             curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
             curl_setopt($curl, CURLOPT_URL, $this->url . "v2/sales");
             curl_setopt($curl, CURLOPT_USERAGENT, 'Braspag PHP SDK');
+            curl_setopt($curl, CURLINFO_HEADER_OUT, true);
+            curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
 
             $headers = array(
                 "Content-Type: application/json",
@@ -59,11 +61,8 @@ class PagadorClient
             );
 
             curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
-            curl_setopt($curl, CURLINFO_HEADER_OUT, true);
-            curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
 
-            $saleRequestJson = json_encode(array("MerchantOrderId" => $saleRequest->MerchantOrderId, "Payment" => $saleRequest->Payment, "Customer" => $saleRequest->Customer));
-
+            $saleRequestJson = json_encode($saleRequest);
             curl_setopt($curl, CURLOPT_POSTFIELDS, $saleRequestJson);
 
             $response = curl_exec($curl);
