@@ -61,9 +61,10 @@ class PagadorClient
             curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
             curl_setopt($curl, CURLINFO_HEADER_OUT, true);
             curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-            //curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
 
-            curl_setopt($curl, CURLOPT_POSTFIELDS, array($saleRequest->MerchantOrderId, serialize($saleRequest->Payment), serialize($saleRequest->Customer)));
+            $saleRequestJson = json_encode(array("MerchantOrderId" => $saleRequest->MerchantOrderId, "Payment" => $saleRequest->Payment, "Customer" => $saleRequest->Customer));
+
+            curl_setopt($curl, CURLOPT_POSTFIELDS, $saleRequestJson);
 
             $response = curl_exec($curl);
 

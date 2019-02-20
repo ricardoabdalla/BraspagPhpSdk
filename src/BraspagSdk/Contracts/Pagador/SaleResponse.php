@@ -10,6 +10,10 @@ class SaleResponse
 
     public $ErrorDescription;
 
+    public $MerchantOrderId;
+
+    public $Customer;
+
     public static function fromJson($json)
     {
         $object = json_decode($json);
@@ -21,8 +25,12 @@ class SaleResponse
     public function populate(\stdClass $data)
     {
         $dataProps = get_object_vars($data);
+        $this->Customer = new CustomerData();
 
-//        if (isset($dataProps['error']))
-//            $this->Error = $dataProps['error'];
+        if (isset($dataProps['MerchantOrderId']))
+            $this->MerchantOrderId = $dataProps['MerchantOrderId'];
+
+        if (isset($dataProps['Customer']->Name))
+            $this->Customer->Name = $dataProps["Customer"]->Name;
     }
 }
