@@ -16,6 +16,12 @@ class SaleResponse
 
     public $Payment;
 
+    public function __construct()
+    {
+        $this->Customer = new CustomerData();
+        $this->Payment = new PaymentDataRequest();
+    }
+
     public static function fromJson($json)
     {
         $response = new SaleResponse();

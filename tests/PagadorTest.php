@@ -77,13 +77,12 @@ final class PagadorClientTest extends TestCase
     {
         date_default_timezone_set("America/Sao_Paulo");
         $orderId = date("HisudmY");
-
         $request->MerchantOrderId = $orderId;
 
         $sut = new PagadorClient($options);
-        $result = $sut->CreateSale($request);
-        $this->assertEquals(http_response_code(201), $result->HttpStatus);
-        $this->assertEquals(TransactionStatus::Authorized, $result->Payment->Status);
+        $response = $sut->CreateSale($request);
+        $this->assertEquals(http_response_code(201), $response->HttpStatus);
+        $this->assertEquals(TransactionStatus::Authorized, $response->Payment->Status);
     }
 
     /**
