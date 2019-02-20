@@ -19,7 +19,6 @@ class CreditCardData
     /// Token obtido através do Silent Order Post
     public $PaymentToken;
 
-    /// </summary>
     public $Brand;
 
     public $SaveCard;
@@ -27,4 +26,12 @@ class CreditCardData
     public $Alias;
 
     public $Avs;
+
+    /**
+     * CreditCardData constructor.
+     */
+    public function __construct()
+    {
+        $this->Avs = new AvsData();
+    }
 }
