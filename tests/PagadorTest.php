@@ -13,7 +13,6 @@ use BraspagSdk\Pagador\PagadorClientOptions;
 use BraspagSdk\Contracts\Pagador\SaleRequest;
 use BraspagSdk\Pagador\PagadorClient;
 use PHPUnit\Framework\TestCase;
-use function Sodium\add;
 
 final class PagadorClientTest extends TestCase
 {
@@ -60,7 +59,6 @@ final class PagadorClientTest extends TestCase
         $payment->CreditCard = $card;
 
         $saleRequest = new SaleRequest();
-        $saleRequest->MerchantOrderId = $orderId;
         $saleRequest->Customer = $customer;
         $saleRequest->Payment = $payment;
 
@@ -75,12 +73,10 @@ final class PagadorClientTest extends TestCase
      */
     public function createSale_forValidCredentials_returnsSaleResponse(SaleRequest $request, PagadorClientOptions $options)
     {
-        date_default_timezone_set("America/Sao_Paulo");
-        $orderId = date("HisudmY");
-        $request->MerchantOrderId = $orderId;
+        $request->MerchantOrderId = time();
 
         $sut = new PagadorClient($options);
-        $response = $sut->CreateSale($request);
+        $response = $sut->createSale($request);
         $this->assertEquals(http_response_code(201), $response->HttpStatus);
         $this->assertEquals(TransactionStatus::Authorized, $response->Payment->Status);
     }
@@ -91,16 +87,14 @@ final class PagadorClientTest extends TestCase
      * @param SaleRequest $request
      * @param PagadorClientOptions $options
      */
-    public function CreateSaleAsync_ForValidCreditCardWithAutomaticCapture_ReturnsPaymentConfirmed(SaleRequest $request, PagadorClientOptions $options)
+    public function createSaleAsync_ForValidCreditCardWithAutomaticCapture_ReturnsPaymentConfirmed(SaleRequest $request, PagadorClientOptions $options)
     {
-        date_default_timezone_set("America/Sao_Paulo");
-        $orderId = date("HisudmY");
-        $request->MerchantOrderId = $orderId;
+        $request->MerchantOrderId = time();
 
         $request->Payment->Capture = true;
 
         $sut = new PagadorClient($options);
-        $response = $sut->CreateSale($request);
+        $response = $sut->createSale($request);
         $this->assertEquals(http_response_code(201), $response->HttpStatus);
         $this->assertEquals(TransactionStatus::PaymentConfirmed, $response->Payment->Status);
     }
@@ -111,11 +105,9 @@ final class PagadorClientTest extends TestCase
      * @param SaleRequest $request
      * @param PagadorClientOptions $options
      */
-    public function CreateSaleAsync_WithFullCustomerData_ReturnsAuthorized(SaleRequest $request, PagadorClientOptions $options)
+    public function createSaleAsync_WithFullCustomerData_ReturnsAuthorized(SaleRequest $request, PagadorClientOptions $options)
     {
-        date_default_timezone_set("America/Sao_Paulo");
-        $orderId = date("HisudmY");
-        $request->MerchantOrderId = $orderId;
+        $request->MerchantOrderId = time();
 
         $address = new AddressData();
         $address->Street = "Alameda Xingu";
@@ -146,7 +138,7 @@ final class PagadorClientTest extends TestCase
         $request->Customer->Phone = "(55) 11 9999-9999";
 
         $sut = new PagadorClient($options);
-        $response = $sut->CreateSale($request);
+        $response = $sut->createSale($request);
         $this->assertEquals(http_response_code(201), $response->HttpStatus);
         $this->assertEquals(TransactionStatus::Authorized, $response->Payment->Status);
         $this->assertNotNull($response->Customer->Address);
@@ -162,11 +154,9 @@ final class PagadorClientTest extends TestCase
      * @param SaleRequest $request
      * @param PagadorClientOptions $options
      */
-    public function CreateSaleAsync_WithAvsAnalysis_ReturnsAuthorized(SaleRequest $request, PagadorClientOptions $options)
+    public function createSaleAsync_WithAvsAnalysis_ReturnsAuthorized(SaleRequest $request, PagadorClientOptions $options)
     {
-        date_default_timezone_set("America/Sao_Paulo");
-        $orderId = date("HisudmY");
-        $request->MerchantOrderId = $orderId;
+        $request->MerchantOrderId = time();
 
         $avs = new AvsData();
         $avs->Street = "Alameda Xingu";
@@ -179,7 +169,36 @@ final class PagadorClientTest extends TestCase
         $request->Payment->CreditCard->Avs = $avs;
 
         $sut = new PagadorClient($options);
-        $response = $sut->CreateSale($request);
+        $response = $sut->createSale($request);
+        $this->assertEquals(http_response_code(201), $response->HttpStatus);
+        $this->assertEquals(TransactionStatus::Authorized, $response->Payment->Status);
+        $this->assertNotNull($response->Payment->CreditCard->Avs);
+        $this->assertEquals("S", $response->Payment->CreditCard->Avs->ReturnCode);
+        $this->assertEquals(3, $response->Payment->CreditCard->Avs->Status);
+    }
+
+    /**
+     * @test
+     * @dataProvider dataProvider
+     * @param SaleRequest $request
+     * @param PagadorClientOptions $options
+     */
+    public function createSaleAsync_WithExternalAuthentication_ReturnsAuthorized(SaleRequest $request, PagadorClientOptions $options)
+    {
+        $request->MerchantOrderId = time();
+
+        $avs = new AvsData();
+        $avs->Street = "Alameda Xingu";
+        $avs->Number = "512";
+        $avs->Complement = "27 andar";
+        $avs->District = "Alphaville";
+        $avs->ZipCode = "04604007";
+        $avs->Cpf = "76250252096";
+
+        $request->Payment->CreditCard->Avs = $avs;
+
+        $sut = new PagadorClient($options);
+        $response = $sut->createSale($request);
         $this->assertEquals(http_response_code(201), $response->HttpStatus);
         $this->assertEquals(TransactionStatus::Authorized, $response->Payment->Status);
         $this->assertNotNull($response->Payment->CreditCard->Avs);

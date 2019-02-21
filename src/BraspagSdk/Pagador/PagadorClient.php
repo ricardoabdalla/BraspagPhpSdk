@@ -25,7 +25,7 @@ class PagadorClient
             $this->url = Endpoints::PagadorApiSandbox;
     }
 
-    function CreateSale(SaleRequest $saleRequest, MerchantCredentials $merchantCredentials = null)
+    function createSale(SaleRequest $saleRequest, MerchantCredentials $merchantCredentials = null)
     {
         if (empty($saleRequest) || !isset($saleRequest))
             throw new InvalidArgumentException("Sale request is null");

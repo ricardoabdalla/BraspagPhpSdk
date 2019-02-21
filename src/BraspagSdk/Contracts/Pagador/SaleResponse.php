@@ -19,7 +19,7 @@ class SaleResponse
     public function __construct()
     {
         $this->Customer = new CustomerData();
-        $this->Payment = new PaymentDataRequest();
+        $this->Payment = new PaymentDataResponse();
     }
 
     public static function fromJson($json)
