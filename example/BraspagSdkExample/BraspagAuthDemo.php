@@ -29,4 +29,4 @@ $request->GrantType = OAuthGrantType::ClientCredentials;
 $request->Scope = "VelocityApp";
 
 
-$response = $bpClient->CreateAccessToken($request);
+$response = $bpClient->createAccessToken($request);
