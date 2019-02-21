@@ -23,7 +23,7 @@ class BraspagAuthClient
             $this->url = Endpoints::BraspagAuthSandbox;
     }
 
-    function CreateAccessToken(AccessTokenRequest $request)
+    function createAccessToken(AccessTokenRequest $request)
     {
         if ($request == null)
             throw new InvalidArgumentException("Request is null");
@@ -62,7 +62,7 @@ class BraspagAuthClient
             curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($curl, CURLOPT_POSTFIELDS, $params);
 
-            $response = curl_exec($curl);
+            $httpResponse = curl_exec($curl);
 
             $statusCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 
@@ -72,7 +72,6 @@ class BraspagAuthClient
             }
 
             curl_close($curl);
-            $response = null;
         }
         catch (Exception $e)
         {
@@ -83,9 +82,9 @@ class BraspagAuthClient
             );
         }
 
-        if (!empty($response) || isset($response))
+        if (!empty($httpResponse) || isset($httpResponse))
         {
-            $jsonResponse = AccessTokenResponse::fromJson($response);
+            $jsonResponse = AccessTokenResponse::fromJson($httpResponse);
             $jsonResponse->HttpStatus = isset($statusCode) ? $statusCode : 0;
             return $jsonResponse;
         }

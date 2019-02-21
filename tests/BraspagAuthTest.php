@@ -24,13 +24,13 @@ final class BraspagAuthTest extends TestCase
         $clientOptions->Environment = Environment::SANDBOX;
 
         $sut = new BraspagAuthClient($clientOptions);
-        $result = $sut->CreateAccessToken($request);
+        $result = $sut->createAccessToken($request);
         $this->assertEquals(200, $result->HttpStatus);
         $this->assertNotNull($result->Token);
     }
 
     /** @test */
-    public function CreateAccessTokenAsync_WhenClientIdIsInvalid_ReturnsInvalidClientError()
+    public function createAccessTokenAsync_whenClientIdIsInvalid_returnsInvalidClientError()
     {
         $request = new AccessTokenRequest();
         $request->ClientId = "99999999-9999-9999-9999-999999999999";
@@ -42,13 +42,13 @@ final class BraspagAuthTest extends TestCase
         $clientOptions->Environment = Environment::SANDBOX;
 
         $sut = new BraspagAuthClient($clientOptions);
-        $result = $sut->CreateAccessToken($request);
+        $result = $sut->createAccessToken($request);
         $this->assertEquals(400, $result->HttpStatus);
         $this->assertEquals("invalid_client", $result->Error);
     }
 
     /** @test */
-    public function CreateAccessTokenAsync_WhenClientSecretIsInvalid_ReturnsInvalidClientError()
+    public function createAccessTokenAsync_whenClientSecretIsInvalid_returnsInvalidClientError()
     {
         $request = new AccessTokenRequest();
         $request->ClientId = "5d85902e-592a-44a9-80bb-bdda74d51bce";
@@ -60,7 +60,7 @@ final class BraspagAuthTest extends TestCase
         $clientOptions->Environment = Environment::SANDBOX;
 
         $sut = new BraspagAuthClient($clientOptions);
-        $result = $sut->CreateAccessToken($request);
+        $result = $sut->createAccessToken($request);
         $this->assertEquals(400, $result->HttpStatus);
         $this->assertEquals("invalid_client", $result->Error);
     }
