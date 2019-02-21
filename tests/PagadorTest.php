@@ -60,7 +60,6 @@ final class PagadorClientTest extends TestCase
         $payment->CreditCard = $card;
 
         $saleRequest = new SaleRequest();
-        $saleRequest->MerchantOrderId = $orderId;
         $saleRequest->Customer = $customer;
         $saleRequest->Payment = $payment;
 
@@ -75,9 +74,7 @@ final class PagadorClientTest extends TestCase
      */
     public function createSale_forValidCredentials_returnsSaleResponse(SaleRequest $request, PagadorClientOptions $options)
     {
-        date_default_timezone_set("America/Sao_Paulo");
-        $orderId = date("HisudmY");
-        $request->MerchantOrderId = $orderId;
+        $request->MerchantOrderId = time();
 
         $sut = new PagadorClient($options);
         $response = $sut->CreateSale($request);
@@ -93,9 +90,7 @@ final class PagadorClientTest extends TestCase
      */
     public function CreateSaleAsync_ForValidCreditCardWithAutomaticCapture_ReturnsPaymentConfirmed(SaleRequest $request, PagadorClientOptions $options)
     {
-        date_default_timezone_set("America/Sao_Paulo");
-        $orderId = date("HisudmY");
-        $request->MerchantOrderId = $orderId;
+        $request->MerchantOrderId = time();
 
         $request->Payment->Capture = true;
 
@@ -113,9 +108,7 @@ final class PagadorClientTest extends TestCase
      */
     public function CreateSaleAsync_WithFullCustomerData_ReturnsAuthorized(SaleRequest $request, PagadorClientOptions $options)
     {
-        date_default_timezone_set("America/Sao_Paulo");
-        $orderId = date("HisudmY");
-        $request->MerchantOrderId = $orderId;
+        $request->MerchantOrderId = time();
 
         $address = new AddressData();
         $address->Street = "Alameda Xingu";
@@ -164,9 +157,7 @@ final class PagadorClientTest extends TestCase
      */
     public function CreateSaleAsync_WithAvsAnalysis_ReturnsAuthorized(SaleRequest $request, PagadorClientOptions $options)
     {
-        date_default_timezone_set("America/Sao_Paulo");
-        $orderId = date("HisudmY");
-        $request->MerchantOrderId = $orderId;
+        $request->MerchantOrderId = time();
 
         $avs = new AvsData();
         $avs->Street = "Alameda Xingu";
