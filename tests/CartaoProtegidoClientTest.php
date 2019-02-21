@@ -8,6 +8,7 @@ use BraspagSdk\Common\Environment;
 use BraspagSdk\Common\Utilities;
 use BraspagSdk\Contracts\CartaoProtegido\GetCreditCardRequest;
 use BraspagSdk\Contracts\CartaoProtegido\GetMaskedCreditCardRequest;
+use BraspagSdk\Contracts\CartaoProtegido\InvalidateCreditCardRequest;
 use BraspagSdk\Contracts\CartaoProtegido\MerchantCredentials;
 use BraspagSdk\Contracts\CartaoProtegido\SaveCreditCardRequest;
 use PHPUnit\Framework\TestCase;
@@ -142,5 +143,53 @@ final class CartaoProtegidoClientTest extends TestCase
         $this->assertEquals(200, $response->HttpStatus);
         $this->assertEmpty($response->ErrorDataCollection);
         $this->assertNotNull($response->JustClickKey);
+    }
+
+    /** @test */
+    public function invalidateCreditCardAsync_forValidToken_returnsOK()
+    {
+        $saveRequest = new SaveCreditCardRequest();
+        $saveRequest->RequestId = Utilities::getGUID();
+        $saveRequest->CustomerName = "Bjorn Ironside";
+        $saveRequest->CustomerIdentification = "762.502.520-96";
+        $saveRequest->CardHolder = "BJORN IRONSIDE";
+        $saveRequest->CardExpiration = "10/2025";
+        $saveRequest->CardNumber = "1000100010001000";
+        $saveRequest->JustClickAlias = uniqid();
+
+        $credentials = new MerchantCredentials("106c8a0c-89a4-4063-bf50-9e6c8530593b");
+        $clientOptions = new CartaoProtegidoClientOptions($credentials, Environment::SANDBOX);
+
+        $sut = new CartaoProtegidoClient($clientOptions);
+        $saveResponse = $sut->saveCreditCard($saveRequest);
+
+        $this->assertEquals(200, $saveResponse->HttpStatus);
+        $this->assertEmpty($saveResponse->ErrorDataCollection);
+        $this->assertNotNull($saveResponse->JustClickKey);
+
+        $invalidateRequest = new InvalidateCreditCardRequest();
+        $invalidateRequest->JustClickKey = $saveResponse->JustClickKey;
+        $invalidateRequest->RequestId = Utilities::getGUID();
+
+        $invalidateResponse = $sut->invalidateCreditCard($invalidateRequest);
+        $this->assertEquals(200, $invalidateResponse->HttpStatus);
+        $this->assertEquals(strtolower($invalidateRequest->RequestId), strtolower($invalidateResponse->CorrelationId));
+    }
+
+    /** @test */
+    public function invalidateCreditCardAsync_forInvalidToken_returnsErrorMessage()
+    {
+        $request = new InvalidateCreditCardRequest();
+        $request->JustClickKey = Utilities::getGUID();
+        $request->RequestId = Utilities::getGUID();
+
+        $credentials = new MerchantCredentials("106c8a0c-89a4-4063-bf50-9e6c8530593b");
+        $clientOptions = new CartaoProtegidoClientOptions($credentials, Environment::SANDBOX);
+
+        $sut = new CartaoProtegidoClient($clientOptions);
+        $response = $sut->invalidateCreditCard($request);
+
+        $this->assertEquals(200, $response->HttpStatus);
+        $this->assertNotEmpty($response->ErrorDataCollection);
     }
 }
