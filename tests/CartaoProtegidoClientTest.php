@@ -9,6 +9,7 @@ use BraspagSdk\Common\Utilities;
 use BraspagSdk\Contracts\CartaoProtegido\GetCreditCardRequest;
 use BraspagSdk\Contracts\CartaoProtegido\GetMaskedCreditCardRequest;
 use BraspagSdk\Contracts\CartaoProtegido\MerchantCredentials;
+use BraspagSdk\Contracts\CartaoProtegido\SaveCreditCardRequest;
 use PHPUnit\Framework\TestCase;
 
 final class CartaoProtegidoClientTest extends TestCase
@@ -118,5 +119,28 @@ final class CartaoProtegidoClientTest extends TestCase
         $response = $sut->getMaskedCreditCard($request);
 
         $this->assertEquals(500, $response->HttpStatus);
+    }
+
+    /** @test */
+    public function saveCreditCardAsync_returnsJustClickToken()
+    {
+        $request = new SaveCreditCardRequest();
+        $request->RequestId = Utilities::getGUID();
+        $request->CustomerName = "Bjorn Ironside";
+        $request->CustomerIdentification = "762.502.520-96";
+        $request->CardHolder = "BJORN IRONSIDE";
+        $request->CardExpiration = "10/2025";
+        $request->CardNumber = "1000100010001000";
+        $request->JustClickAlias = uniqid();
+
+        $credentials = new MerchantCredentials("106c8a0c-89a4-4063-bf50-9e6c8530593b");
+        $clientOptions = new CartaoProtegidoClientOptions($credentials, Environment::SANDBOX);
+
+        $sut = new CartaoProtegidoClient($clientOptions);
+        $response = $sut->saveCreditCard($request);
+
+        $this->assertEquals(200, $response->HttpStatus);
+        $this->assertEmpty($response->ErrorDataCollection);
+        $this->assertNotNull($response->JustClickKey);
     }
 }
