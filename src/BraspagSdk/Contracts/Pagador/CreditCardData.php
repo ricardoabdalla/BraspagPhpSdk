@@ -19,7 +19,6 @@ class CreditCardData
     /// Token obtido através do Silent Order Post
     public $PaymentToken;
 
-    /// </summary>
     public $Brand;
 
     public $SaveCard;
