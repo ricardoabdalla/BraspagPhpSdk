@@ -14,23 +14,23 @@ class SaleResponse
 
     public $Customer;
 
-    public static function fromJson($json)
+    public $Payment;
+
+    public function __construct()
     {
-        $object = json_decode($json);
-        $response = new SaleResponse();
-        $response->populate($object);
-        return $response;
+        $this->Customer = new CustomerData();
+        $this->Payment = new PaymentDataRequest();
     }
 
-    public function populate(\stdClass $data)
+    public static function fromJson($json)
     {
-        $dataProps = get_object_vars($data);
-        $this->Customer = new CustomerData();
+        $response = new SaleResponse();
+        $jsonArray = json_decode($json);
 
-        if (isset($dataProps['MerchantOrderId']))
-            $this->MerchantOrderId = $dataProps['MerchantOrderId'];
+        foreach ($jsonArray as $key => $val)
+            if (property_exists(__CLASS__, $key))
+                $response->$key = $val;
 
-        if (isset($dataProps['Customer']->Name))
-            $this->Customer->Name = $dataProps["Customer"]->Name;
+        return $response;
     }
 }
