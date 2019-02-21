@@ -9,6 +9,7 @@ use BraspagSdk\Common\ClientOptions;
 use BraspagSdk\Contracts\BraspagAuth\AccessTokenRequest;
 use BraspagSdk\Contracts\BraspagAuth\AccessTokenResponse;
 use InvalidArgumentException;
+use Exception;
 
 class BraspagAuthClient
 {
@@ -20,11 +21,9 @@ class BraspagAuthClient
             $this->url = Endpoints::BraspagAuthProduction;
         else
             $this->url = Endpoints::BraspagAuthSandbox;
-
-        $this->url .= "oauth2/token";
     }
 
-    function CreateAccessToken(AccessTokenRequest $request)
+    function createAccessToken(AccessTokenRequest $request)
     {
         if ($request == null)
             throw new InvalidArgumentException("Request is null");
@@ -50,40 +49,52 @@ class BraspagAuthClient
         if (empty($request->RefreshToken) || !isset($request->RefreshToken))
             $params .= "&scope=$request->Scope";
 
+        try {
+            $curl = curl_init();
 
-        $curl = curl_init();
+            curl_setopt($curl, CURLOPT_POST, true);
+            curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+            curl_setopt($curl, CURLOPT_USERPWD, $request->ClientId . ":" . $request->ClientSecret);
+            curl_setopt($curl, CURLOPT_URL, $this->url . "oauth2/token");
+            curl_setopt($curl, CURLOPT_USERAGENT, 'Braspag PHP SDK');
+            curl_setopt($curl, CURLOPT_HTTPHEADER, array('Content-Type: application/x-www-form-urlencoded', "cache-control: no-cache"));
+            curl_setopt($curl, CURLINFO_HEADER_OUT, true);
+            curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($curl, CURLOPT_POSTFIELDS, $params);
 
-        curl_setopt($curl, CURLOPT_POST, true);
-        curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
-        curl_setopt($curl, CURLOPT_USERPWD, $request->ClientId . ":" . $request->ClientSecret);
-        curl_setopt($curl, CURLOPT_URL, $this->url);
+            $httpResponse = curl_exec($curl);
 
-        $headers = array(
-            'Content-Type: application/x-www-form-urlencoded',
-            'User-Agent: Braspag PHP SDK',
-            "cache-control: no-cache"
-        );
+            $statusCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 
-        curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, CURLOPT_POSTFIELDS, $params);
+            if ($errno = curl_errno($curl)) {
+                $error_message = curl_strerror($errno);
+                $curl_error = curl_error($curl);
+            }
 
-        $response = curl_exec($curl);
-        $statusCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-        $err = curl_error($curl);
-        curl_close($curl);
-
-        if ($err) {
-            echo "cURL Error #:" . $err;
-        } else {
-            echo $response;
+            curl_close($curl);
+        }
+        catch (Exception $e)
+        {
+            trigger_error(sprintf(
+                'Curl failed with error #%d: %s',
+                $e->getCode(), $e->getMessage()),
+                E_USER_ERROR
+            );
         }
 
-        // Deserializar
-        $jsonResponse = AccessTokenResponse::fromJson($response);
-        $jsonResponse->HttpStatus = $statusCode;
-        return $jsonResponse;
-
-        // Preencher HTTP Status
+        if (!empty($httpResponse) || isset($httpResponse))
+        {
+            $jsonResponse = AccessTokenResponse::fromJson($httpResponse);
+            $jsonResponse->HttpStatus = isset($statusCode) ? $statusCode : 0;
+            return $jsonResponse;
+        }
+        else
+        {
+            $errorResponse = new AccessTokenResponse();
+            $errorResponse->HttpStatus = isset($statusCode) ? $statusCode : 0;
+            $errorResponse->Error = isset($curl_error) ? $curl_error : "unknown_error";
+            $errorResponse->ErrorDescription = isset($error_message) ? $error_message : "Unknown error";
+            return $errorResponse;
+        }
     }
 }
