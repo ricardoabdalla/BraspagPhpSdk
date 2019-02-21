@@ -74,7 +74,7 @@ final class PagadorClientTest extends TestCase
      */
     public function createSale_forValidCredentials_returnsSaleResponse(SaleRequest $request, PagadorClientOptions $options)
     {
-        $request->MerchantOrderId = time();
+        $request->MerchantOrderId = uniqid();
 
         $sut = new PagadorClient($options);
         $response = $sut->CreateSale($request);
@@ -90,7 +90,7 @@ final class PagadorClientTest extends TestCase
      */
     public function CreateSaleAsync_ForValidCreditCardWithAutomaticCapture_ReturnsPaymentConfirmed(SaleRequest $request, PagadorClientOptions $options)
     {
-        $request->MerchantOrderId = time();
+        $request->MerchantOrderId = uniqid();
 
         $request->Payment->Capture = true;
 
@@ -108,7 +108,7 @@ final class PagadorClientTest extends TestCase
      */
     public function CreateSaleAsync_WithFullCustomerData_ReturnsAuthorized(SaleRequest $request, PagadorClientOptions $options)
     {
-        $request->MerchantOrderId = time();
+        $request->MerchantOrderId = uniqid();
 
         $address = new AddressData();
         $address->Street = "Alameda Xingu";
@@ -157,7 +157,7 @@ final class PagadorClientTest extends TestCase
      */
     public function CreateSaleAsync_WithAvsAnalysis_ReturnsAuthorized(SaleRequest $request, PagadorClientOptions $options)
     {
-        $request->MerchantOrderId = time();
+        $request->MerchantOrderId = uniqid();
 
         $avs = new AvsData();
         $avs->Street = "Alameda Xingu";
