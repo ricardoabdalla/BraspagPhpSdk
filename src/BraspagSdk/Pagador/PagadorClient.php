@@ -27,7 +27,7 @@ class PagadorClient
 
     function createSale(SaleRequest $saleRequest, MerchantCredentials $merchantCredentials = null)
     {
-        if (empty($saleRequest) || !isset($saleRequest))
+        if (empty($saleRequest))
             throw new InvalidArgumentException("Sale request is null");
 
         if (empty($this->credentials) && empty($merchantCredentials))
@@ -56,7 +56,7 @@ class PagadorClient
                 "User-Agent: Braspag PHP SDK",
                 "MerchantId: $currentCredentials->MerchantId",
                 "MerchantKey: $currentCredentials->MerchantKey",
-                "RequestId: " . $this->getGUID(),
+                "RequestId: " . uniqid(),
                 "cache-control: no-cache"
             );
 
@@ -80,7 +80,7 @@ class PagadorClient
             );
         }
 
-        if (!empty($response) || isset($response))
+        if (!empty($response))
         {
             $jsonResponse = SaleResponse::fromJson($response);
             $jsonResponse->HttpStatus = isset($statusCode) ? $statusCode : 0;
@@ -95,23 +95,4 @@ class PagadorClient
             return $errorResponse;
         }
     }
-
-    function getGUID(){
-        if (function_exists('com_create_guid')){
-            return com_create_guid();
-        }else{
-            mt_srand((double)microtime()*10000);//optional for php 4.2.0 and up.
-            $charid = strtoupper(md5(uniqid(rand(), true)));
-            $hyphen = chr(45);// "-"
-            $uuid = chr(123)// "{"
-                .substr($charid, 0, 8).$hyphen
-                .substr($charid, 8, 4).$hyphen
-                .substr($charid,12, 4).$hyphen
-                .substr($charid,16, 4).$hyphen
-                .substr($charid,20,12)
-                .chr(125);// "}"
-            return $uuid;
-        }
-    }
-
 }
