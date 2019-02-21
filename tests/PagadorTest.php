@@ -6,6 +6,7 @@ use BraspagSdk\Contracts\Pagador\AddressData;
 use BraspagSdk\Contracts\Pagador\AvsData;
 use BraspagSdk\Contracts\Pagador\CreditCardData;
 use BraspagSdk\Contracts\Pagador\CustomerData;
+use BraspagSdk\Contracts\Pagador\ExternalAuthenticationData;
 use BraspagSdk\Contracts\Pagador\MerchantCredentials;
 use BraspagSdk\Contracts\Pagador\PaymentDataRequest;
 use BraspagSdk\Contracts\Pagador\TransactionStatus;
@@ -77,7 +78,7 @@ final class PagadorClientTest extends TestCase
 
         $sut = new PagadorClient($options);
         $response = $sut->createSale($request);
-        $this->assertEquals(http_response_code(201), $response->HttpStatus);
+        $this->assertEquals(201, $response->HttpStatus);
         $this->assertEquals(TransactionStatus::Authorized, $response->Payment->Status);
     }
 
@@ -95,7 +96,7 @@ final class PagadorClientTest extends TestCase
 
         $sut = new PagadorClient($options);
         $response = $sut->createSale($request);
-        $this->assertEquals(http_response_code(201), $response->HttpStatus);
+        $this->assertEquals(201, $response->HttpStatus);
         $this->assertEquals(TransactionStatus::PaymentConfirmed, $response->Payment->Status);
     }
 
@@ -139,7 +140,7 @@ final class PagadorClientTest extends TestCase
 
         $sut = new PagadorClient($options);
         $response = $sut->createSale($request);
-        $this->assertEquals(http_response_code(201), $response->HttpStatus);
+        $this->assertEquals(201, $response->HttpStatus);
         $this->assertEquals(TransactionStatus::Authorized, $response->Payment->Status);
         $this->assertNotNull($response->Customer->Address);
         $this->assertNotNull($response->Customer->DeliveryAddress);
@@ -170,7 +171,7 @@ final class PagadorClientTest extends TestCase
 
         $sut = new PagadorClient($options);
         $response = $sut->createSale($request);
-        $this->assertEquals(http_response_code(201), $response->HttpStatus);
+        $this->assertEquals(201, $response->HttpStatus);
         $this->assertEquals(TransactionStatus::Authorized, $response->Payment->Status);
         $this->assertNotNull($response->Payment->CreditCard->Avs);
         $this->assertEquals("S", $response->Payment->CreditCard->Avs->ReturnCode);
@@ -185,24 +186,39 @@ final class PagadorClientTest extends TestCase
      */
     public function createSaleAsync_WithExternalAuthentication_ReturnsAuthorized(SaleRequest $request, PagadorClientOptions $options)
     {
-        $request->MerchantOrderId = time();
+        $request->MerchantOrderId = uniqid();
 
-        $avs = new AvsData();
-        $avs->Street = "Alameda Xingu";
-        $avs->Number = "512";
-        $avs->Complement = "27 andar";
-        $avs->District = "Alphaville";
-        $avs->ZipCode = "04604007";
-        $avs->Cpf = "76250252096";
+        $externalAuthentication = new ExternalAuthenticationData();
+        $externalAuthentication->Cavv = "AABBBlCIIgAAAAARJIgiEL0gDoE=";
+        $externalAuthentication->Eci = "5";
+        $externalAuthentication->Xid = "dnFoU3R4amdpWTJJdzJRVHNhNDZ";
 
-        $request->Payment->CreditCard->Avs = $avs;
+        $request->Payment->ExternalAuthentication = $externalAuthentication;
 
         $sut = new PagadorClient($options);
         $response = $sut->createSale($request);
-        $this->assertEquals(http_response_code(201), $response->HttpStatus);
+
+        $this->assertEquals(201, $response->HttpStatus);
         $this->assertEquals(TransactionStatus::Authorized, $response->Payment->Status);
-        $this->assertNotNull($response->Payment->CreditCard->Avs);
-        $this->assertEquals("S", $response->Payment->CreditCard->Avs->ReturnCode);
-        $this->assertEquals(3, $response->Payment->CreditCard->Avs->Status);
+        $this->assertNotNull($response->Payment->ExternalAuthentication);
+        $this->assertEquals("AABBBlCIIgAAAAARJIgiEL0gDoE=", $response->Payment->ExternalAuthentication->Cavv);
+        $this->assertEquals("5", $response->Payment->ExternalAuthentication->Eci);
+        $this->assertEquals("dnFoU3R4amdpWTJJdzJRVHNhNDZ", $response->Payment->ExternalAuthentication->Xid);
+    }
+
+    public function createSaleAsync_WithAuthentication_ReturnsNotFinished(SaleRequest $request, PagadorClientOptions $options)
+    {
+        $request->MerchantOrderId = uniqid();
+
+        $request->Payment->Authenticate = true;
+        $request->Payment->ReturnUrl = "http://www.test.com/redirect";
+
+        $sut = new PagadorClient($options);
+        $response = $sut->createSale($request);
+
+        $this->assertEquals(201, $response->HttpStatus);
+        $this->assertEquals(TransactionStatus::NotFinished, $response->Payment->Status);
+        $this->assertNotNull($response->Payment->AuthenticationUrl);
+        $this->assertEquals($request->Payment->ReturnUrl, $response->Payment->ReturnUrl);
     }
 }

@@ -131,4 +131,17 @@ class PaymentDataResponse
 
     // WalletData
     public $Wallet;
+
+    public function __construct()
+    {
+        $this->Credentials = new CredentialsData();
+        $this->CreditCard = new CreditCardData();
+        $this->DebitCard = new DebitCardData();
+        $this->ExternalAuthentication = new ExternalAuthenticationData();
+        $this->ExtraDataCollection = new ExtraData();
+        $this->FraudAnalysis = new FraudAnalysisRequestData();
+        $this->Links = new LinkData();
+        $this->RecurrentPayment = new RecurrentPaymentDataResponse();
+        $this->Wallet = new WalletData();
+    }
 }

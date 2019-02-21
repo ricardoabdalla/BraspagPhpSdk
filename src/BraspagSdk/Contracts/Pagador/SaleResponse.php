@@ -4,21 +4,20 @@ namespace BraspagSdk\Contracts\Pagador;
 
 class SaleResponse
 {
+    public $Customer;
+
+    public $ErrorDataCollection;
+
     public $HttpStatus;
 
-    public $Error;
-
-    public $ErrorDescription;
-
     public $MerchantOrderId;
-
-    public $Customer;
 
     public $Payment;
 
     public function __construct()
     {
         $this->Customer = new CustomerData();
+        $this->ErrorDataCollection = new ErrorData();
         $this->Payment = new PaymentDataResponse();
     }
 

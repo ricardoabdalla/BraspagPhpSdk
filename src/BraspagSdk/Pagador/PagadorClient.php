@@ -90,8 +90,8 @@ class PagadorClient
         {
             $errorResponse = new SaleResponse();
             $errorResponse->HttpStatus = isset($statusCode) ? $statusCode : 0;
-            $errorResponse->Error = isset($curl_error) ? $curl_error : "unknown_error";
-            $errorResponse->ErrorDescription = isset($error_message) ? $error_message : "Unknown error";
+            $errorResponse->ErrorDataCollection->Code = isset($curl_error) ? $curl_error : "unknown_error";
+            $errorResponse->ErrorDataCollection->Message = isset($error_message) ? $error_message : "Unknown error";
             return $errorResponse;
         }
     }
