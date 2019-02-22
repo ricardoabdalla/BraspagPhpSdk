@@ -6,9 +6,11 @@ use BraspagSdk\Contracts\Pagador\AddressData;
 use BraspagSdk\Contracts\Pagador\AvsData;
 use BraspagSdk\Contracts\Pagador\CreditCardData;
 use BraspagSdk\Contracts\Pagador\CustomerData;
+use BraspagSdk\Contracts\Pagador\DebitCardData;
 use BraspagSdk\Contracts\Pagador\ExternalAuthenticationData;
 use BraspagSdk\Contracts\Pagador\MerchantCredentials;
 use BraspagSdk\Contracts\Pagador\PaymentDataRequest;
+use BraspagSdk\Contracts\Pagador\RecurrentPaymentDataRequest;
 use BraspagSdk\Contracts\Pagador\TransactionStatus;
 use BraspagSdk\Pagador\PagadorClientOptions;
 use BraspagSdk\Contracts\Pagador\SaleRequest;
@@ -65,6 +67,8 @@ final class PagadorClientTest extends TestCase
 
         return [[$saleRequest, $pagadorClientOptions]];
     }
+
+    #region CreateSale
 
     /**
      * @test
@@ -263,4 +267,102 @@ final class PagadorClientTest extends TestCase
         $this->assertEquals(201, $response->HttpStatus);
         $this->assertEquals(TransactionStatus::Authorized, $response->Payment->Status);
     }
+
+    /**
+     * @test
+     * @dataProvider dataProvider
+     * @param SaleRequest $request
+     * @param PagadorClientOptions $options
+     */
+    public function createSale_UsingDebitCard_ReturnsNotFinished(SaleRequest $request, PagadorClientOptions $options)
+    {
+        $request->MerchantOrderId = uniqid();
+
+        $debitCard = new DebitCardData();
+        $debitCard->CardNumber = "4551870000000181";
+        $debitCard->Holder = "BJORN IRONSIDE";
+        $debitCard->ExpirationDate = "12/2025";
+        $debitCard->SecurityCode = "123";
+        $debitCard->Brand = "Visa";
+
+        $request->Payment->DebitCard = $debitCard;
+        $request->Payment->CreditCard = null;
+        $request->Payment->Type = "DebitCard";
+        $request->Payment->Authenticate = true;
+        $request->Payment->ReturnUrl = "http://www.test.com/redirect";
+
+        $sut = new PagadorClient($options);
+        $response = $sut->createSale($request);
+
+        $this->assertEquals(201, $response->HttpStatus);
+        $this->assertEquals(TransactionStatus::NotFinished, $response->Payment->Status);
+        $this->assertNotNull($response->Payment->DebitCard);
+    }
+
+    /**
+     * @test
+     * @dataProvider dataProvider
+     * @param SaleRequest $request
+     * @param PagadorClientOptions $options
+     */
+    public function createSale_UsingRegisteredBoleto_ReturnsAuthorized(SaleRequest $request, PagadorClientOptions $options)
+    {
+        $request->MerchantOrderId = uniqid();
+
+        $request->Payment->Type = "Boleto";
+        $request->Payment->CreditCard = null;
+        $request->Payment->BoletoNumber = "2017091101";
+        $request->Payment->Assignor = "Braspag";
+        $request->Payment->Demonstrative = "Texto demonstrativo";
+        $request->Payment->ExpirationDate = date("Y-m-d");
+        $request->Payment->Identification = "11017523000167";
+        $request->Payment->Instructions = "Aceitar somente até a data de vencimento.";
+
+        $sut = new PagadorClient($options);
+        $response = $sut->createSale($request);
+
+        $this->assertEquals(201, $response->HttpStatus);
+        $this->assertEquals(TransactionStatus::Authorized, $response->Payment->Status);
+        $this->assertNotNull($response->Payment->Assignor);
+        $this->assertNotNull($response->Payment->Address);
+        $this->assertNotNull($response->Payment->BarCodeNumber);
+        $this->assertNotNull($response->Payment->BoletoNumber);
+        $this->assertNotNull($response->Payment->Demonstrative);
+        $this->assertNotNull($response->Payment->DigitableLine);
+        $this->assertNotNull($response->Payment->ExpirationDate);
+        $this->assertNotNull($response->Payment->Identification);
+        $this->assertNotNull($response->Payment->Instructions);
+        $this->assertNotNull($response->Payment->Url);
+    }
+
+    /**
+     * @test
+     * @dataProvider dataProvider
+     * @param SaleRequest $request
+     * @param PagadorClientOptions $options
+     */
+    public function createSaleAsync_UsingRecurrentPayment_ReturnsAuthorized(SaleRequest $request, PagadorClientOptions $options)
+    {
+        $request->MerchantOrderId = uniqid();
+
+        $recurrentPayment = new RecurrentPaymentDataRequest();
+        $recurrentPayment->AuthorizeNow = true;
+        $recurrentPayment->EndDate = date('Y-m-d', strtotime("+3 months", strtotime(date("Y-m-d"))));
+        $recurrentPayment->Interval = "Monthly";
+
+        $request->Payment->RecurrentPayment = $recurrentPayment;
+
+        $sut = new PagadorClient($options);
+        $response = $sut->createSale($request);
+
+        $this->assertEquals(201, $response->HttpStatus);
+        $this->assertEquals(TransactionStatus::Authorized, $response->Payment->Status);
+        $this->assertNotNull($response->Payment->RecurrentPayment);
+        $this->assertNotNull($response->Payment->RecurrentPayment->RecurrentPaymentId);
+        $this->assertNotNull($response->Payment->RecurrentPayment->NextRecurrency);
+        $this->assertNotNull($response->Payment->RecurrentPayment->Interval);
+        $this->assertNotNull($response->Payment->RecurrentPayment->EndDate);
+    }
+
+    #endregion
 }
