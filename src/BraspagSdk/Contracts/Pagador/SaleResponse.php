@@ -14,12 +14,12 @@ class SaleResponse
 
     public $Payment;
 
-    public function __construct()
-    {
-        $this->Customer = new CustomerData();
-        $this->ErrorDataCollection = new ErrorData();
-        $this->Payment = new PaymentDataResponse();
-    }
+//    public function __construct()
+//    {
+//        $this->Customer = new CustomerData();
+//        $this->ErrorDataCollection = new ErrorData();
+//        $this->Payment = new PaymentDataResponse();
+//    }
 
     public static function fromJson($json)
     {

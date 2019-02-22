@@ -10,8 +10,8 @@ class FraudAnalysisTravelData
 
     public $Passengers;
 
-    public function __construct()
-    {
-        $this->Passengers = new FraudAnalysisPassengerData();
-    }
+//    public function __construct()
+//    {
+//        $this->Passengers = new FraudAnalysisPassengerData();
+//    }
 }

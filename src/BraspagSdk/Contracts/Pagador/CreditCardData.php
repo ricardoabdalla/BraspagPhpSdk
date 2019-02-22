@@ -27,8 +27,8 @@ class CreditCardData
 
     public $Avs;
 
-    public function __construct()
-    {
-        $this->Avs = new AvsData();
-    }
+//    public function __construct()
+//    {
+//        $this->Avs = new AvsData();
+//    }
 }

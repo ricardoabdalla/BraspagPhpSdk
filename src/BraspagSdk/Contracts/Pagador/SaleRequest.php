@@ -13,11 +13,11 @@ class SaleRequest
     /**
      * SaleRequest constructor.
      */
-    public function __construct()
-    {
-        $this->Customer = new CustomerData();
-        $this->Payment = new PaymentDataRequest();
-    }
+//    public function __construct()
+//    {
+//        $this->Customer = new CustomerData();
+//        $this->Payment = new PaymentDataRequest();
+//    }
 
 
 }

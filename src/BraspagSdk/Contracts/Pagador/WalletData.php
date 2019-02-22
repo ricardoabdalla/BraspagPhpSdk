@@ -10,8 +10,8 @@ class WalletData
 
     public $AdditionalData;
 
-    public function __construct()
-    {
-        $this->AdditionalData = new WalletAdditionalData();
-    }
+//    public function __construct()
+//    {
+//        $this->AdditionalData = new WalletAdditionalData();
+//    }
 }
