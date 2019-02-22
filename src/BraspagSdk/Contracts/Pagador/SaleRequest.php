@@ -18,6 +18,4 @@ class SaleRequest
         $this->Customer = new CustomerData();
         $this->Payment = new PaymentDataRequest();
     }
-
-
 }
