@@ -2,6 +2,8 @@
 
 namespace BraspagSdk\Contracts\Pagador;
 
+use phpDocumentor\Reflection\Types\Array_;
+
 class PaymentDataRequest
 {
     public $Provider;
