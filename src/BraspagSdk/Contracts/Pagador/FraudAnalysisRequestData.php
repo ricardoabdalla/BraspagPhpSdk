@@ -33,12 +33,12 @@ class FraudAnalysisRequestData
     // FraudAnalysisTravelData
     public $Travel;
 
-//    public function __construct()
-//    {
-//        $this->Browser = new FraudAnalysisBrowserData();
-//        $this->Cart = new FraudAnalysisCartData();
-//        $this->MerchantDefinedFields = new FraudAnalysisMerchantDefinedFieldsData();
-//        $this->Shipping = new FraudAnalysisShippingData();
-//        $this->Travel = new FraudAnalysisTravelData();
-//    }
+    public function __construct()
+    {
+        $this->Browser = new FraudAnalysisBrowserData();
+        $this->Cart = new FraudAnalysisCartData();
+        $this->MerchantDefinedFields = new FraudAnalysisMerchantDefinedFieldsData();
+        $this->Shipping = new FraudAnalysisShippingData();
+        $this->Travel = new FraudAnalysisTravelData();
+    }
 }

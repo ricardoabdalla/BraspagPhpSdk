@@ -11,8 +11,8 @@ class FraudAnalysisCartData
     // List<FraudAnalysisItemData>
     public $Items;
 
-//    public function __construct()
-//    {
-//        $this->Items = new FraudAnalysisItemData();
-//    }
+    public function __construct()
+    {
+        $this->Items = new FraudAnalysisItemData();
+    }
 }

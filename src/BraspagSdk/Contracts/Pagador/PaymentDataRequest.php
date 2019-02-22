@@ -2,6 +2,8 @@
 
 namespace BraspagSdk\Contracts\Pagador;
 
+use phpDocumentor\Reflection\Types\Array_;
+
 class PaymentDataRequest
 {
     public $Provider;
@@ -72,15 +74,15 @@ class PaymentDataRequest
 
     public $ExtraDataCollection;
 
-//    public function __construct()
-//    {
-//        $this->CreditCard = new CreditCardData();
-//        $this->DebitCard = new DebitCardData();
-//        $this->Wallet = new WalletData();
-//        $this->Credentials = new CredentialsData();
-//        $this->ExternalAuthentication = new ExternalAuthenticationData();
-//        $this->FraudAnalysis = new FraudAnalysisRequestData();
-//        $this->RecurrentPayment = new RecurrentPaymentDataRequest();
-//        $this->ExtraDataCollection = new ExtraData();
-//    }
+    public function __construct()
+    {
+        $this->CreditCard = new CreditCardData();
+        $this->DebitCard = new DebitCardData();
+        $this->Wallet = new WalletData();
+        $this->Credentials = new CredentialsData();
+        $this->ExternalAuthentication = new ExternalAuthenticationData();
+        $this->FraudAnalysis = new FraudAnalysisRequestData();
+        $this->RecurrentPayment = new RecurrentPaymentDataRequest();
+        //$this->ExtraDataCollection = new ExtraData();
+    }
 }

@@ -23,8 +23,8 @@ class FraudAnalysisPassengerData
     // List<FraudAnalysisTravelLegsData>
     public $TravelLegs;
 
-//    public function __construct()
-//    {
-//        $this->TravelLegs = new FraudAnalysisTravelLegsData();
-//    }
+    public function __construct()
+    {
+        $this->TravelLegs = new FraudAnalysisTravelLegsData();
+    }
 }
