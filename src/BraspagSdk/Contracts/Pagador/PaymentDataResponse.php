@@ -138,7 +138,7 @@ class PaymentDataResponse
         $this->CreditCard = new CreditCardData();
         $this->DebitCard = new DebitCardData();
         $this->ExternalAuthentication = new ExternalAuthenticationData();
-        $this->ExtraDataCollection = new ExtraData();
+        $this->ExtraDataCollection = array();
         $this->FraudAnalysis = new FraudAnalysisRequestData();
         $this->Links = new LinkData();
         $this->RecurrentPayment = new RecurrentPaymentDataResponse();

@@ -4,6 +4,7 @@ namespace BraspagSdk\Tests;
 
 use BraspagSdk\Contracts\Pagador\AddressData;
 use BraspagSdk\Contracts\Pagador\AvsData;
+use BraspagSdk\Contracts\Pagador\CaptureRequest;
 use BraspagSdk\Contracts\Pagador\CreditCardData;
 use BraspagSdk\Contracts\Pagador\CustomerData;
 use BraspagSdk\Contracts\Pagador\DebitCardData;
@@ -341,7 +342,7 @@ final class PagadorClientTest extends TestCase
      * @param SaleRequest $request
      * @param PagadorClientOptions $options
      */
-    public function createSaleAsync_UsingRecurrentPayment_ReturnsAuthorized(SaleRequest $request, PagadorClientOptions $options)
+    public function createSale_UsingRecurrentPayment_ReturnsAuthorized(SaleRequest $request, PagadorClientOptions $options)
     {
         $request->MerchantOrderId = uniqid();
 
@@ -362,6 +363,38 @@ final class PagadorClientTest extends TestCase
         $this->assertNotNull($response->Payment->RecurrentPayment->NextRecurrency);
         $this->assertNotNull($response->Payment->RecurrentPayment->Interval);
         $this->assertNotNull($response->Payment->RecurrentPayment->EndDate);
+    }
+
+    #endregion
+
+    #region MultiStep_Tests
+
+    /**
+     * @test
+     * @dataProvider dataProvider
+     * @param SaleRequest $request
+     * @param PagadorClientOptions $options
+     */
+    public function createSale_ThenCapture_ThenVoid_ThenGet(SaleRequest $request, PagadorClientOptions $options)
+    {
+        $request->MerchantOrderId = uniqid();
+
+        $sut = new PagadorClient($options);
+        $response = $sut->createSale($request);
+
+        $this->assertEquals(201, $response->HttpStatus);
+        $this->assertEquals(TransactionStatus::Authorized, $response->Payment->Status);
+
+        $captureRequest = new CaptureRequest();
+        $captureRequest->PaymentId = $response->Payment->PaymentId;
+        $captureRequest->Amount = $response->Payment->Amount;
+
+        $captureResponse = $sut->capture($captureRequest);
+
+        $this->assertEquals(200, $captureResponse->HttpStatus);
+        $this->assertEquals(TransactionStatus::PaymentConfirmed, $captureResponse->Status);
+
+        /* TODO adicionar método para cancelar e para consultar */
     }
 
     #endregion
