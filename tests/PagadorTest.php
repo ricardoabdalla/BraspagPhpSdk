@@ -13,6 +13,7 @@ use BraspagSdk\Contracts\Pagador\MerchantCredentials;
 use BraspagSdk\Contracts\Pagador\PaymentDataRequest;
 use BraspagSdk\Contracts\Pagador\RecurrentPaymentDataRequest;
 use BraspagSdk\Contracts\Pagador\TransactionStatus;
+use BraspagSdk\Contracts\Pagador\VoidRequest;
 use BraspagSdk\Pagador\PagadorClientOptions;
 use BraspagSdk\Contracts\Pagador\SaleRequest;
 use BraspagSdk\Pagador\PagadorClient;
@@ -275,7 +276,7 @@ final class PagadorClientTest extends TestCase
      * @param SaleRequest $request
      * @param PagadorClientOptions $options
      */
-    public function createSale_UsingDebitCard_ReturnsNotFinished(SaleRequest $request, PagadorClientOptions $options)
+    public function createSale_usingDebitCard_returnsNotFinished(SaleRequest $request, PagadorClientOptions $options)
     {
         $request->MerchantOrderId = uniqid();
 
@@ -306,7 +307,7 @@ final class PagadorClientTest extends TestCase
      * @param SaleRequest $request
      * @param PagadorClientOptions $options
      */
-    public function createSale_UsingRegisteredBoleto_ReturnsAuthorized(SaleRequest $request, PagadorClientOptions $options)
+    public function createSale_usingRegisteredBoleto_returnsAuthorized(SaleRequest $request, PagadorClientOptions $options)
     {
         $request->MerchantOrderId = uniqid();
 
@@ -342,7 +343,7 @@ final class PagadorClientTest extends TestCase
      * @param SaleRequest $request
      * @param PagadorClientOptions $options
      */
-    public function createSale_UsingRecurrentPayment_ReturnsAuthorized(SaleRequest $request, PagadorClientOptions $options)
+    public function createSale_usingRecurrentPayment_returnsAuthorized(SaleRequest $request, PagadorClientOptions $options)
     {
         $request->MerchantOrderId = uniqid();
 
@@ -375,7 +376,7 @@ final class PagadorClientTest extends TestCase
      * @param SaleRequest $request
      * @param PagadorClientOptions $options
      */
-    public function createSale_ThenCapture_ThenVoid_ThenGet(SaleRequest $request, PagadorClientOptions $options)
+    public function createSale_thenCapture_thenVoid_thenGet(SaleRequest $request, PagadorClientOptions $options)
     {
         $request->MerchantOrderId = uniqid();
 
@@ -394,7 +395,45 @@ final class PagadorClientTest extends TestCase
         $this->assertEquals(200, $captureResponse->HttpStatus);
         $this->assertEquals(TransactionStatus::PaymentConfirmed, $captureResponse->Status);
 
-        /* TODO adicionar método para cancelar e para consultar */
+        $voidRequest = new VoidRequest();
+        $voidRequest->PaymentId = $response->Payment->PaymentId;
+        $voidRequest->Amount = $response->Payment->Amount;
+
+        $voidResponse = $sut->void($voidRequest);
+
+        $this->assertEquals(200, $voidResponse->HttpStatus);
+        $this->assertEquals(TransactionStatus::Voided, $voidResponse->Status);
+
+        $getResponse = $sut->get($response->Payment->PaymentId);
+
+        $this->assertEquals(200, $getResponse->HttpStatus);
+        $this->assertNotNull($getResponse->MerchantOrderId);
+        $this->assertNotNull($getResponse->Customer);
+        $this->assertNotNull($getResponse->Payment);
+        $this->assertEquals(TransactionStatus::Voided, $getResponse->Payment->Status);
+    }
+
+    /**
+     * @test
+     * @dataProvider dataProvider
+     * @param SaleRequest $request
+     * @param PagadorClientOptions $options
+     */
+    public function createSale_thenGetByOrderId(SaleRequest $request, PagadorClientOptions $options)
+    {
+        $request->MerchantOrderId = uniqid();
+
+        $sut = new PagadorClient($options);
+        $response = $sut->createSale($request);
+
+        $this->assertEquals(201, $response->HttpStatus);
+        $this->assertEquals(TransactionStatus::Authorized, $response->Payment->Status);
+
+        $getResponse = $sut->getByOrderId($response->MerchantOrderId);
+
+        $this->assertEquals(200, $getResponse->HttpStatus);
+        $this->assertNotEmpty($getResponse->Payments);
+        $this->assertNotNull($getResponse->Payments[0]->PaymentId);
     }
 
     #endregion
