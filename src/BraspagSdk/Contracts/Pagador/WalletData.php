@@ -9,4 +9,9 @@ class WalletData
     public $Walletkey;
 
     public $AdditionalData;
+
+    public function __construct()
+    {
+        $this->AdditionalData = new WalletAdditionalData();
+    }
 }

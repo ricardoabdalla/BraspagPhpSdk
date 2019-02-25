@@ -2,28 +2,21 @@
 
 namespace BraspagSdk\Contracts\Pagador;
 
-class SaleResponse
+class PaymentIdResponse
 {
-    public $Customer;
-
-    public $ErrorDataCollection;
-
     public $HttpStatus;
 
-    public $MerchantOrderId;
-
-    public $Payment;
+    // List<PaymentIdData>
+    public $Payments;
 
     public function __construct()
     {
-        $this->Customer = new CustomerData();
-        $this->ErrorDataCollection = new ErrorData();
-        $this->Payment = new PaymentDataResponse();
+        $this->Payments = array();
     }
 
     public static function fromJson($json)
     {
-        $response = new SaleResponse();
+        $response = new PaymentIdResponse();
         $jsonArray = json_decode($json);
 
         foreach ($jsonArray as $key => $val)

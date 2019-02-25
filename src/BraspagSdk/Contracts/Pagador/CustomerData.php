@@ -21,4 +21,10 @@ class CustomerData
     public $Address;
 
     public $DeliveryAddress;
+
+    public function __construct()
+    {
+        $this->Address = new AddressData();
+        $this->DeliveryAddress = new AddressData();
+    }
 }
