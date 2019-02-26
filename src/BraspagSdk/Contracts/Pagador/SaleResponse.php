@@ -17,7 +17,7 @@ class SaleResponse
     public function __construct()
     {
         $this->Customer = new CustomerData();
-        $this->ErrorDataCollection = new ErrorData();
+        $this->ErrorDataCollection = array();
         $this->Payment = new PaymentDataResponse();
     }
 
