@@ -4,8 +4,10 @@ namespace BraspagSdk\Pagador;
 
 use BraspagSdk\Contracts\Pagador\CaptureRequest;
 use BraspagSdk\Contracts\Pagador\CaptureResponse;
+use BraspagSdk\Contracts\Pagador\CustomerData;
 use BraspagSdk\Contracts\Pagador\MerchantCredentials;
 use BraspagSdk\Contracts\Pagador\PaymentIdResponse;
+use BraspagSdk\Contracts\Pagador\RecurrencyInterval;
 use BraspagSdk\Contracts\Pagador\SaleRequest;
 use BraspagSdk\Contracts\Pagador\SaleResponse;
 use BraspagSdk\Common\Endpoints;
@@ -25,13 +27,10 @@ class PagadorClient
     {
         $this->credentials = $pagadorClientOptions->credentials;
 
-        if ($pagadorClientOptions->Environment == Environment::PRODUCTION)
-        {
+        if ($pagadorClientOptions->Environment == Environment::PRODUCTION) {
             $this->url = Endpoints::PagadorApiProduction;
             $this->queryUrl = Endpoints::PagadorQueryApiProduction;
-        }
-        else
-        {
+        } else {
             $this->url = Endpoints::PagadorApiSandbox;
             $this->queryUrl = Endpoints::PagadorQueryApiSandbox;
         }
@@ -82,9 +81,7 @@ class PagadorClient
             $statusCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 
             curl_close($curl);
-        }
-        catch (Exception $e)
-        {
+        } catch (Exception $e) {
             trigger_error(sprintf(
                 'Curl failed with error #%d: %s',
                 $e->getCode(), $e->getMessage()),
@@ -92,14 +89,11 @@ class PagadorClient
             );
         }
 
-        if (!empty($response))
-        {
+        if (!empty($response)) {
             $jsonResponse = SaleResponse::fromJson($response);
             $jsonResponse->HttpStatus = isset($statusCode) ? $statusCode : 0;
             return $jsonResponse;
-        }
-        else
-        {
+        } else {
             $errorResponse = new SaleResponse();
             $errorResponse->HttpStatus = isset($statusCode) ? $statusCode : 0;
             $errorResponse->ErrorDataCollection->Code = isset($curl_error) ? $curl_error : "unknown_error";
@@ -157,17 +151,15 @@ class PagadorClient
 
             curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
 
-            $saleRequestJson = json_encode($captureRequest);
-            curl_setopt($curl, CURLOPT_POSTFIELDS, $saleRequestJson);
+            $captureRequestJson = json_encode($captureRequest);
+            curl_setopt($curl, CURLOPT_POSTFIELDS, $captureRequestJson);
 
             $response = curl_exec($curl);
 
             $statusCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 
             curl_close($curl);
-        }
-        catch (Exception $e)
-        {
+        } catch (Exception $e) {
             trigger_error(sprintf(
                 'Curl failed with error #%d: %s',
                 $e->getCode(), $e->getMessage()),
@@ -175,14 +167,11 @@ class PagadorClient
             );
         }
 
-        if (!empty($response))
-        {
+        if (!empty($response)) {
             $jsonResponse = CaptureResponse::fromJson($response);
             $jsonResponse->HttpStatus = isset($statusCode) ? $statusCode : 0;
             return $jsonResponse;
-        }
-        else
-        {
+        } else {
             $errorResponse = new CaptureResponse();
             $errorResponse->HttpStatus = isset($statusCode) ? $statusCode : 0;
             $errorResponse->ErrorDataCollection->Code = isset($curl_error) ? $curl_error : "unknown_error";
@@ -240,17 +229,15 @@ class PagadorClient
 
             curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
 
-            $saleRequestJson = json_encode($voidRequest);
-            curl_setopt($curl, CURLOPT_POSTFIELDS, $saleRequestJson);
+            $voidRequestJson = json_encode($voidRequest);
+            curl_setopt($curl, CURLOPT_POSTFIELDS, $voidRequestJson);
 
             $response = curl_exec($curl);
 
             $statusCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 
             curl_close($curl);
-        }
-        catch (Exception $e)
-        {
+        } catch (Exception $e) {
             trigger_error(sprintf(
                 'Curl failed with error #%d: %s',
                 $e->getCode(), $e->getMessage()),
@@ -258,14 +245,11 @@ class PagadorClient
             );
         }
 
-        if (!empty($response))
-        {
+        if (!empty($response)) {
             $jsonResponse = VoidResponse::fromJson($response);
             $jsonResponse->HttpStatus = isset($statusCode) ? $statusCode : 0;
             return $jsonResponse;
-        }
-        else
-        {
+        } else {
             $errorResponse = new VoidResponse();
             $errorResponse->HttpStatus = isset($statusCode) ? $statusCode : 0;
             $errorResponse->ErrorDataCollection->Code = isset($curl_error) ? $curl_error : "unknown_error";
@@ -316,9 +300,7 @@ class PagadorClient
             $statusCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 
             curl_close($curl);
-        }
-        catch (Exception $e)
-        {
+        } catch (Exception $e) {
             trigger_error(sprintf(
                 'Curl failed with error #%d: %s',
                 $e->getCode(), $e->getMessage()),
@@ -326,14 +308,11 @@ class PagadorClient
             );
         }
 
-        if (!empty($response))
-        {
+        if (!empty($response)) {
             $jsonResponse = SaleResponse::fromJson($response);
             $jsonResponse->HttpStatus = isset($statusCode) ? $statusCode : 0;
             return $jsonResponse;
-        }
-        else
-        {
+        } else {
             $errorResponse = new SaleResponse();
             $errorResponse->HttpStatus = isset($statusCode) ? $statusCode : 0;
             $errorResponse->ErrorDataCollection->Code = isset($curl_error) ? $curl_error : "unknown_error";
@@ -384,9 +363,7 @@ class PagadorClient
             $statusCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 
             curl_close($curl);
-        }
-        catch (Exception $e)
-        {
+        } catch (Exception $e) {
             trigger_error(sprintf(
                 'Curl failed with error #%d: %s',
                 $e->getCode(), $e->getMessage()),
@@ -394,18 +371,385 @@ class PagadorClient
             );
         }
 
-        if (!empty($response))
-        {
+        if (!empty($response)) {
             $jsonResponse = PaymentIdResponse::fromJson($response);
             $jsonResponse->HttpStatus = isset($statusCode) ? $statusCode : 0;
             return $jsonResponse;
-        }
-        else
-        {
+        } else {
             $errorResponse = new PaymentIdResponse();
             $errorResponse->HttpStatus = isset($statusCode) ? $statusCode : 0;
             return $errorResponse;
         }
     }
 
+    public function changeRecurrencyCustomer($recurrentPaymentId, CustomerData $customer, MerchantCredentials $merchantCredentials = null)
+    {
+        if (empty($recurrentPaymentId))
+            throw new InvalidArgumentException("RecurrentPaymentId is null");
+
+        if (empty($customer))
+            throw new InvalidArgumentException("Customer is null");
+
+        if (empty($this->credentials) && empty($merchantCredentials))
+            throw new InvalidArgumentException("Credentials are null");
+
+        $currentCredentials = $this->credentials ?: $merchantCredentials;
+
+        if (empty($currentCredentials->MerchantId))
+            throw new InvalidArgumentException("Invalid credentials: MerchantId is null");
+
+        if (empty($currentCredentials->MerchantKey))
+            throw new InvalidArgumentException("Invalid credentials: MerchantKey is null");
+
+        try {
+            $curl = curl_init();
+
+            curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "PUT");
+            curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+            curl_setopt($curl, CURLOPT_URL, $this->url . "v2/recurrentpayment/$recurrentPaymentId/customer");
+            curl_setopt($curl, CURLOPT_USERAGENT, 'Braspag PHP SDK');
+            curl_setopt($curl, CURLINFO_HEADER_OUT, true);
+            curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($customer));
+            $headers = array(
+                "Content-Type: application/json",
+                "User-Agent: Braspag PHP SDK",
+                "MerchantId: $currentCredentials->MerchantId",
+                "MerchantKey: $currentCredentials->MerchantKey",
+                "RequestId: " . uniqid(),
+                "cache-control: no-cache"
+            );
+
+            curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
+
+            $response = curl_exec($curl);
+
+            $statusCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+
+            curl_close($curl);
+        } catch (Exception $e) {
+            trigger_error(sprintf(
+                'Curl failed with error #%d: %s',
+                $e->getCode(), $e->getMessage()),
+                E_USER_ERROR
+            );
+        }
+
+        if (!empty($response)) {
+            $HttpStatus = isset($statusCode) ? $statusCode : 0;
+            return $HttpStatus;
+        } else {
+            $HttpStatus = isset($statusCode) ? $statusCode : 0;
+            return $HttpStatus;
+        }
+    }
+
+    public function changeRecurrencyEndDate($recurrentPaymentId, $endDate, MerchantCredentials $merchantCredentials = null)
+    {
+        if (empty($recurrentPaymentId))
+            throw new InvalidArgumentException("RecurrentPaymentId is null");
+
+        if (empty($endDate))
+            throw new InvalidArgumentException("EndDate is null");
+
+        if (empty($this->credentials) && empty($merchantCredentials))
+            throw new InvalidArgumentException("Credentials are null");
+
+        $currentCredentials = $this->credentials ?: $merchantCredentials;
+
+        if (empty($currentCredentials->MerchantId))
+            throw new InvalidArgumentException("Invalid credentials: MerchantId is null");
+
+        if (empty($currentCredentials->MerchantKey))
+            throw new InvalidArgumentException("Invalid credentials: MerchantKey is null");
+
+        try {
+            $curl = curl_init();
+
+            curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "PUT");
+            curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+            curl_setopt($curl, CURLOPT_URL, $this->url . "v2/recurrentpayment/$recurrentPaymentId/enddate");
+            curl_setopt($curl, CURLOPT_USERAGENT, 'Braspag PHP SDK');
+            curl_setopt($curl, CURLINFO_HEADER_OUT, true);
+            curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($endDate));
+            $headers = array(
+                "Content-Type: application/json",
+                "User-Agent: Braspag PHP SDK",
+                "MerchantId: $currentCredentials->MerchantId",
+                "MerchantKey: $currentCredentials->MerchantKey",
+                "RequestId: " . uniqid(),
+                "cache-control: no-cache"
+            );
+
+            curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
+
+            $response = curl_exec($curl);
+
+            $statusCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+
+            curl_close($curl);
+        } catch (Exception $e) {
+            trigger_error(sprintf(
+                'Curl failed with error #%d: %s',
+                $e->getCode(), $e->getMessage()),
+                E_USER_ERROR
+            );
+        }
+
+        if (!empty($response)) {
+            $HttpStatus = isset($statusCode) ? $statusCode : 0;
+            return $HttpStatus;
+        } else {
+            $HttpStatus = isset($statusCode) ? $statusCode : 0;
+            return $HttpStatus;
+        }
+    }
+
+    public function changeRecurrencyInterval($recurrentPaymentId, $interval, MerchantCredentials $merchantCredentials = null)
+    {
+        if (empty($recurrentPaymentId))
+            throw new InvalidArgumentException("RecurrentPaymentId is null");
+
+        if (empty($interval))
+            throw new InvalidArgumentException("Interval is null");
+
+        if (empty($this->credentials) && empty($merchantCredentials))
+            throw new InvalidArgumentException("Credentials are null");
+
+        $currentCredentials = $this->credentials ?: $merchantCredentials;
+
+        if (empty($currentCredentials->MerchantId))
+            throw new InvalidArgumentException("Invalid credentials: MerchantId is null");
+
+        if (empty($currentCredentials->MerchantKey))
+            throw new InvalidArgumentException("Invalid credentials: MerchantKey is null");
+
+        try {
+            $curl = curl_init();
+
+            curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "PUT");
+            curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+            curl_setopt($curl, CURLOPT_URL, $this->url . "v2/recurrentpayment/$recurrentPaymentId/interval");
+            curl_setopt($curl, CURLOPT_USERAGENT, 'Braspag PHP SDK');
+            curl_setopt($curl, CURLINFO_HEADER_OUT, true);
+            curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($interval));
+            $headers = array(
+                "Content-Type: application/json",
+                "User-Agent: Braspag PHP SDK",
+                "MerchantId: $currentCredentials->MerchantId",
+                "MerchantKey: $currentCredentials->MerchantKey",
+                "RequestId: " . uniqid(),
+                "cache-control: no-cache"
+            );
+
+            curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
+
+            $response = curl_exec($curl);
+
+            $statusCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+
+            curl_close($curl);
+        } catch (Exception $e) {
+            trigger_error(sprintf(
+                'Curl failed with error #%d: %s',
+                $e->getCode(), $e->getMessage()),
+                E_USER_ERROR
+            );
+        }
+
+        if (!empty($response)) {
+            $HttpStatus = isset($statusCode) ? $statusCode : 0;
+            return $HttpStatus;
+        } else {
+            $HttpStatus = isset($statusCode) ? $statusCode : 0;
+            return $HttpStatus;
+        }
+    }
+
+    public function changeRecurrencyDay($recurrentPaymentId, $day, MerchantCredentials $merchantCredentials = null)
+    {
+        if (empty($recurrentPaymentId))
+            throw new InvalidArgumentException("RecurrentPaymentId is null");
+
+        if (empty($day))
+            throw new InvalidArgumentException("Day is null");
+
+        if (empty($this->credentials) && empty($merchantCredentials))
+            throw new InvalidArgumentException("Credentials are null");
+
+        $currentCredentials = $this->credentials ?: $merchantCredentials;
+
+        if (empty($currentCredentials->MerchantId))
+            throw new InvalidArgumentException("Invalid credentials: MerchantId is null");
+
+        if (empty($currentCredentials->MerchantKey))
+            throw new InvalidArgumentException("Invalid credentials: MerchantKey is null");
+
+        try {
+            $curl = curl_init();
+
+            curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "PUT");
+            curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+            curl_setopt($curl, CURLOPT_URL, $this->url . "v2/recurrentpayment/$recurrentPaymentId/recurrencyday");
+            curl_setopt($curl, CURLOPT_USERAGENT, 'Braspag PHP SDK');
+            curl_setopt($curl, CURLINFO_HEADER_OUT, true);
+            curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($day));
+            $headers = array(
+                "Content-Type: application/json",
+                "User-Agent: Braspag PHP SDK",
+                "MerchantId: $currentCredentials->MerchantId",
+                "MerchantKey: $currentCredentials->MerchantKey",
+                "RequestId: " . uniqid(),
+                "cache-control: no-cache"
+            );
+
+            curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
+
+            $response = curl_exec($curl);
+
+            $statusCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+
+            curl_close($curl);
+        } catch (Exception $e) {
+            trigger_error(sprintf(
+                'Curl failed with error #%d: %s',
+                $e->getCode(), $e->getMessage()),
+                E_USER_ERROR
+            );
+        }
+
+        if (!empty($response)) {
+            $HttpStatus = isset($statusCode) ? $statusCode : 0;
+            return $HttpStatus;
+        } else {
+            $HttpStatus = isset($statusCode) ? $statusCode : 0;
+            return $HttpStatus;
+        }
+    }
+
+    public function changeRecurrencyAmount($recurrentPaymentId, $amount, MerchantCredentials $merchantCredentials = null)
+    {
+        if (empty($recurrentPaymentId))
+            throw new InvalidArgumentException("RecurrentPaymentId is null");
+
+        if (empty($amount))
+            throw new InvalidArgumentException("Amount is null");
+
+        if (empty($this->credentials) && empty($merchantCredentials))
+            throw new InvalidArgumentException("Credentials are null");
+
+        $currentCredentials = $this->credentials ?: $merchantCredentials;
+
+        if (empty($currentCredentials->MerchantId))
+            throw new InvalidArgumentException("Invalid credentials: MerchantId is null");
+
+        if (empty($currentCredentials->MerchantKey))
+            throw new InvalidArgumentException("Invalid credentials: MerchantKey is null");
+
+        try {
+            $curl = curl_init();
+
+            curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "PUT");
+            curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+            curl_setopt($curl, CURLOPT_URL, $this->url . "v2/recurrentpayment/$recurrentPaymentId/amount");
+            curl_setopt($curl, CURLOPT_USERAGENT, 'Braspag PHP SDK');
+            curl_setopt($curl, CURLINFO_HEADER_OUT, true);
+            curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($amount));
+            $headers = array(
+                "Content-Type: application/json",
+                "User-Agent: Braspag PHP SDK",
+                "MerchantId: $currentCredentials->MerchantId",
+                "MerchantKey: $currentCredentials->MerchantKey",
+                "RequestId: " . uniqid(),
+                "cache-control: no-cache"
+            );
+            curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
+
+            $response = curl_exec($curl);
+
+            $statusCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+
+            curl_close($curl);
+        } catch (Exception $e) {
+            trigger_error(sprintf(
+                'Curl failed with error #%d: %s',
+                $e->getCode(), $e->getMessage()),
+                E_USER_ERROR
+            );
+        }
+
+        if (!empty($response)) {
+            $HttpStatus = isset($statusCode) ? $statusCode : 0;
+            return $HttpStatus;
+        } else {
+            $HttpStatus = isset($statusCode) ? $statusCode : 0;
+            return $HttpStatus;
+        }
+    }
+
+
+    public function changeRecurrencyNextPaymentDate($recurrentPaymentId, $nextPaymentDate, MerchantCredentials $merchantCredentials = null)
+    {
+        if (empty($recurrentPaymentId))
+            throw new InvalidArgumentException("RecurrentPaymentId is null");
+
+        if (empty($nextPaymentDate))
+            throw new InvalidArgumentException("NextPaymentDate is null");
+
+        if (empty($this->credentials) && empty($merchantCredentials))
+            throw new InvalidArgumentException("Credentials are null");
+
+        $currentCredentials = $this->credentials ?: $merchantCredentials;
+
+        if (empty($currentCredentials->MerchantId))
+            throw new InvalidArgumentException("Invalid credentials: MerchantId is null");
+
+        if (empty($currentCredentials->MerchantKey))
+            throw new InvalidArgumentException("Invalid credentials: MerchantKey is null");
+
+        try {
+            $curl = curl_init();
+
+            curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "PUT");
+            curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+            curl_setopt($curl, CURLOPT_URL, $this->url . "v2/recurrentpayment/$recurrentPaymentId/nextPaymentDate");
+            curl_setopt($curl, CURLOPT_USERAGENT, 'Braspag PHP SDK');
+            curl_setopt($curl, CURLINFO_HEADER_OUT, true);
+            curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($nextPaymentDate));
+            $headers = array(
+                "Content-Type: application/json",
+                "User-Agent: Braspag PHP SDK",
+                "MerchantId: $currentCredentials->MerchantId",
+                "MerchantKey: $currentCredentials->MerchantKey",
+                "RequestId: " . uniqid(),
+                "cache-control: no-cache"
+            );
+            curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
+
+            $response = curl_exec($curl);
+
+            $statusCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+
+            curl_close($curl);
+        } catch (Exception $e) {
+            trigger_error(sprintf(
+                'Curl failed with error #%d: %s',
+                $e->getCode(), $e->getMessage()),
+                E_USER_ERROR
+            );
+        }
+
+        if (!empty($response)) {
+            $HttpStatus = isset($statusCode) ? $statusCode : 0;
+            return $HttpStatus;
+        } else {
+            $HttpStatus = isset($statusCode) ? $statusCode : 0;
+            return $HttpStatus;
+        }
+    }
 }

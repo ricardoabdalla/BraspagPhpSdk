@@ -11,6 +11,7 @@ use BraspagSdk\Contracts\Pagador\DebitCardData;
 use BraspagSdk\Contracts\Pagador\ExternalAuthenticationData;
 use BraspagSdk\Contracts\Pagador\MerchantCredentials;
 use BraspagSdk\Contracts\Pagador\PaymentDataRequest;
+use BraspagSdk\Contracts\Pagador\RecurrencyInterval;
 use BraspagSdk\Contracts\Pagador\RecurrentPaymentDataRequest;
 use BraspagSdk\Contracts\Pagador\TransactionStatus;
 use BraspagSdk\Contracts\Pagador\VoidRequest;
@@ -434,6 +435,183 @@ final class PagadorClientTest extends TestCase
         $this->assertEquals(200, $getResponse->HttpStatus);
         $this->assertNotEmpty($getResponse->Payments);
         $this->assertNotNull($getResponse->Payments[0]->PaymentId);
+    }
+
+    #endregion
+
+    #region Recurrent
+
+    /**
+     * @test
+     * @dataProvider dataProvider
+     * @param SaleRequest $request
+     * @param PagadorClientOptions $options
+     */
+    public function changeRecurrencyCustomer_returnsOk(SaleRequest $request, PagadorClientOptions $options)
+    {
+        $request->MerchantOrderId = uniqid();
+
+        $recurrentPayment = new RecurrentPaymentDataRequest();
+        $recurrentPayment->AuthorizeNow = true;
+        $recurrentPayment->EndDate = date('Y-m-d', strtotime("+3 months", strtotime(date("Y-m-d"))));
+        $recurrentPayment->Interval = "Monthly";
+
+        $request->Payment->RecurrentPayment = $recurrentPayment;
+
+        $sut = new PagadorClient($options);
+        $response = $sut->createSale($request);
+
+        $this->assertEquals(201, $response->HttpStatus);
+        $this->assertEquals(TransactionStatus::Authorized, $response->Payment->Status);
+        $this->assertNotNull($response->Payment->RecurrentPayment);
+        $this->assertNotNull($response->Payment->RecurrentPayment->RecurrentPaymentId);
+        $this->assertNotNull($response->Payment->RecurrentPayment->NextRecurrency);
+        $this->assertNotNull($response->Payment->RecurrentPayment->Interval);
+        $this->assertNotNull($response->Payment->RecurrentPayment->EndDate);
+
+        $customer = new CustomerData();
+        $customer->Name = "Ragnar Lothbrok";
+        $customer->Email = "ragnar.lothbrok@vikings.com.br";
+        $customer->IdentityType = "CPF";
+        $customer->Identity = "637.952.420-70";
+
+        $recurrentResponse = $sut->changeRecurrencyCustomer($response->Payment->RecurrentPayment->RecurrentPaymentId, $customer);
+
+        $this->assertEquals(200, $recurrentResponse);
+    }
+
+    /**
+     * @test
+     * @dataProvider dataProvider
+     * @param SaleRequest $request
+     * @param PagadorClientOptions $options
+     */
+    public function changeRecurrencyEndDate_returnsOk(SaleRequest $request, PagadorClientOptions $options)
+    {
+        $request->MerchantOrderId = uniqid();
+
+        $recurrentPayment = new RecurrentPaymentDataRequest();
+        $recurrentPayment->AuthorizeNow = true;
+        $recurrentPayment->EndDate = date('Y-m-d', strtotime("+3 months", strtotime(date("Y-m-d"))));
+        $recurrentPayment->Interval = "Monthly";
+
+        $request->Payment->RecurrentPayment = $recurrentPayment;
+
+        $sut = new PagadorClient($options);
+        $response = $sut->createSale($request);
+
+        $this->assertEquals(201, $response->HttpStatus);
+        $this->assertEquals(TransactionStatus::Authorized, $response->Payment->Status);
+        $this->assertNotNull($response->Payment->RecurrentPayment);
+        $this->assertNotNull($response->Payment->RecurrentPayment->RecurrentPaymentId);
+        $this->assertNotNull($response->Payment->RecurrentPayment->NextRecurrency);
+        $this->assertNotNull($response->Payment->RecurrentPayment->Interval);
+        $this->assertNotNull($response->Payment->RecurrentPayment->EndDate);
+
+        $endDate = date('Y-m-d', strtotime("+3 months", strtotime(date("Y-m-d"))));
+
+        $recurrentResponse = $sut->changeRecurrencyEndDate($response->Payment->RecurrentPayment->RecurrentPaymentId, $endDate);
+
+        $this->assertEquals(200, $recurrentResponse);
+    }
+
+    /**
+     * @test
+     * @dataProvider dataProvider
+     * @param SaleRequest $request
+     * @param PagadorClientOptions $options
+     */
+    public function changeRecurrencyInterval_returnsOk(SaleRequest $request, PagadorClientOptions $options)
+    {
+        $request->MerchantOrderId = uniqid();
+
+        $recurrentPayment = new RecurrentPaymentDataRequest();
+        $recurrentPayment->AuthorizeNow = true;
+        $recurrentPayment->EndDate = date('Y-m-d', strtotime("+3 months", strtotime(date("Y-m-d"))));
+        $recurrentPayment->Interval = "Monthly";
+
+        $request->Payment->RecurrentPayment = $recurrentPayment;
+
+        $sut = new PagadorClient($options);
+        $response = $sut->createSale($request);
+
+        $this->assertEquals(201, $response->HttpStatus);
+        $this->assertEquals(TransactionStatus::Authorized, $response->Payment->Status);
+        $this->assertNotNull($response->Payment->RecurrentPayment);
+        $this->assertNotNull($response->Payment->RecurrentPayment->RecurrentPaymentId);
+        $this->assertNotNull($response->Payment->RecurrentPayment->NextRecurrency);
+        $this->assertNotNull($response->Payment->RecurrentPayment->Interval);
+        $this->assertNotNull($response->Payment->RecurrentPayment->EndDate);
+
+        $recurrentResponse = $sut->changeRecurrencyInterval($response->Payment->RecurrentPayment->RecurrentPaymentId, RecurrencyInterval::Quarterly);
+
+        $this->assertEquals(200, $recurrentResponse);
+    }
+
+    /**
+     * @test
+     * @dataProvider dataProvider
+     * @param SaleRequest $request
+     * @param PagadorClientOptions $options
+     */
+    public function changeRecurrencyDay_ReturnsOk(SaleRequest $request, PagadorClientOptions $options)
+    {
+        $request->MerchantOrderId = uniqid();
+
+        $recurrentPayment = new RecurrentPaymentDataRequest();
+        $recurrentPayment->AuthorizeNow = true;
+        $recurrentPayment->EndDate = date('Y-m-d', strtotime("+3 months", strtotime(date("Y-m-d"))));
+        $recurrentPayment->Interval = "Monthly";
+
+        $request->Payment->RecurrentPayment = $recurrentPayment;
+
+        $sut = new PagadorClient($options);
+        $response = $sut->createSale($request);
+
+        $this->assertEquals(201, $response->HttpStatus);
+        $this->assertEquals(TransactionStatus::Authorized, $response->Payment->Status);
+        $this->assertNotNull($response->Payment->RecurrentPayment);
+        $this->assertNotNull($response->Payment->RecurrentPayment->RecurrentPaymentId);
+        $this->assertNotNull($response->Payment->RecurrentPayment->NextRecurrency);
+        $this->assertNotNull($response->Payment->RecurrentPayment->Interval);
+        $this->assertNotNull($response->Payment->RecurrentPayment->EndDate);
+
+        $recurrentResponse = $sut->changeRecurrencyDay($response->Payment->RecurrentPayment->RecurrentPaymentId, 10);
+
+        $this->assertEquals(200, $recurrentResponse);
+    }
+
+    /**
+     * @test
+     * @dataProvider dataProvider
+     * @param SaleRequest $request
+     * @param PagadorClientOptions $options
+     */
+    public function changeRecurrencyNextPaymentDate_ReturnsOk(SaleRequest $request, PagadorClientOptions $options)
+    {
+        $request->MerchantOrderId = uniqid();
+
+        $recurrentPayment = new RecurrentPaymentDataRequest();
+        $recurrentPayment->AuthorizeNow = true;
+        $recurrentPayment->EndDate = date('Y-m-d', strtotime("+3 months", strtotime(date("Y-m-d"))));
+        $recurrentPayment->Interval = "Monthly";
+
+        $request->Payment->RecurrentPayment = $recurrentPayment;
+
+        $sut = new PagadorClient($options);
+        $response = $sut->createSale($request);
+
+        $this->assertEquals(201, $response->HttpStatus);
+        $this->assertEquals(TransactionStatus::Authorized, $response->Payment->Status);
+        $this->assertNotNull($response->Payment->RecurrentPayment);
+        $this->assertNotNull($response->Payment->RecurrentPayment->RecurrentPaymentId);
+        $this->assertNotNull($response->Payment->RecurrentPayment->NextRecurrency);
+        $this->assertNotNull($response->Payment->RecurrentPayment->Interval);
+        $this->assertNotNull($response->Payment->RecurrentPayment->EndDate);
+
+        $recurrentResponse = $sut->changeRecurrencyNextPaymentDate($response->Payment->RecurrentPayment->RecurrentPaymentId, 15000);
+
+        $this->assertEquals(200, $recurrentResponse);
     }
 
     #endregion
