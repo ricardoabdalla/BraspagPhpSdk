@@ -25,6 +25,11 @@ class CaptureResponse
     /// Status da Transação
     public $Status;
 
+    public function __construct()
+    {
+        $this->ErrorDataCollection = array();
+    }
+
     public static function fromJson($json)
     {
         $response = new CaptureResponse();
