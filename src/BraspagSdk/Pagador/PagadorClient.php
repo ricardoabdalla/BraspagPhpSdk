@@ -698,6 +698,14 @@ class PagadorClient
 
         try
         {
+            $payment->ExternalAuthentication = null;
+            $payment->FraudAnalysis = null;
+            $payment->RecurrentPayment = null;
+            $payment->Wallet = null;
+            $payment->ExtraDataCollection = null;
+            $payment->DebitCard = null;
+            $payment = (object) array_filter((array) $payment);
+
             $curl = curl_init();
             curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "PUT");
             curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
@@ -713,9 +721,8 @@ class PagadorClient
                 "RequestId: " . uniqid(),
                 "cache-control: no-cache"));
 
-            $response = curl_exec($curl);
+            curl_exec($curl);
             $statusCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-
             curl_close($curl);
         }
         catch (Exception $e)
