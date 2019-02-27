@@ -96,8 +96,8 @@ class PagadorClient
             $errorResponse = new SaleResponse();
             $errorResponse->HttpStatus = isset($statusCode) ? $statusCode : 0;
             $errorData = new ErrorData();
-            $errorData->Code = isset($curl_error) ? $curl_error : "unknown_error";
-            $errorData->Message = isset($error_message) ? $error_message : "Unknown error";
+            $errorData->Code = "unknown_error";
+            $errorData->Message = "Unknown error";
             array_push($errorResponse->ErrorDataCollection, $errorData);
             return $errorResponse;
         }
@@ -161,8 +161,8 @@ class PagadorClient
             $errorResponse = new CaptureResponse();
             $errorResponse->HttpStatus = isset($statusCode) ? $statusCode : 0;
             $errorData = new ErrorData();
-            $errorData->Code = isset($curl_error) ? $curl_error : "unknown_error";
-            $errorData->Message = isset($error_message) ? $error_message : "Unknown error";
+            $errorData->Code = "unknown_error";
+            $errorData->Message = "Unknown error";
             array_push($errorResponse->ErrorDataCollection, $errorData);
             return $errorResponse;
         }
@@ -291,8 +291,8 @@ class PagadorClient
             $errorResponse = new SaleResponse();
             $errorResponse->HttpStatus = isset($statusCode) ? $statusCode : 0;
             $errorData = new ErrorData();
-            $errorData->Code = isset($curl_error) ? $curl_error : "unknown_error";
-            $errorData->Message = isset($error_message) ? $error_message : "Unknown error";
+            $errorData->Code = "unknown_error";
+            $errorData->Message = "Unknown error";
             array_push($errorResponse->ErrorDataCollection, $errorData);
             return $errorResponse;
         }
