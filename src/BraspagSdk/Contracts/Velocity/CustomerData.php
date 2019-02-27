@@ -6,6 +6,7 @@ class CustomerData
 {
     public $Name;
 
+    /// CPF ou CNPJ - Apenas números
     public $Identity;
 
     public $IpAddress;

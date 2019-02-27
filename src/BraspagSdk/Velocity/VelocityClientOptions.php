@@ -2,6 +2,7 @@
 
 namespace BraspagSdk\Velocity;
 
+use BraspagSdk\Common\ClientOptions;
 use BraspagSdk\Contracts\Velocity\MerchantCredentials;
 
 class VelocityClientOptions extends ClientOptions

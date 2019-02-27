@@ -18,6 +18,9 @@ class VelocityClient
 
     public function __construct(VelocityClientOptions $options)
     {
+        if (empty($options))
+            throw new InvalidArgumentException("options is null");
+
         $this->credentials = $options->Credentials;
 
         if ($options->Environment == Environment::PRODUCTION)
@@ -50,7 +53,6 @@ class VelocityClient
         {
             $curl = curl_init();
             curl_setopt($curl, CURLOPT_POST, true);
-            curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
             curl_setopt($curl, CURLOPT_URL, $this->url . "analysis/v2/");
             curl_setopt($curl, CURLOPT_USERAGENT, 'Braspag-SDK-PHP');
             curl_setopt($curl, CURLINFO_HEADER_OUT, true);
@@ -59,7 +61,7 @@ class VelocityClient
             $headers = array(
                 "Content-Type: application/json",
                 "MerchantId: $currentCredentials->MerchantId",
-                "Authorization: Bearer $currentCredentials->MerchantId",
+                "Authorization: Bearer $currentCredentials->AccessToken",
                 "RequestId: " . uniqid(),
                 "cache-control: no-cache"
             );
@@ -83,7 +85,13 @@ class VelocityClient
 
         if (!empty($httpResponse))
         {
-            $response = AnalysisResponse::fromJson($httpResponse);
+            if ($statusCode == 201)
+                $response = AnalysisResponse::fromJson($httpResponse);
+            else if ($statusCode == 400)
+                $response = AnalysisResponse::fromErrorJson($httpResponse);
+            else
+                $response = AnalysisResponse::fromText($httpResponse);
+
             $response->HttpStatus = isset($statusCode) ? $statusCode : 0;
             return $response;
         }

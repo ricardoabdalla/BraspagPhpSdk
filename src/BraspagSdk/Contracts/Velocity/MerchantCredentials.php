@@ -1,13 +1,6 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: rabdalla
- * Date: 2019-02-25
- * Time: 15:19
- */
 
 namespace BraspagSdk\Contracts\Velocity;
-
 
 class MerchantCredentials
 {

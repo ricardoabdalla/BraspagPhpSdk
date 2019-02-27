@@ -8,6 +8,7 @@ class TransactionData
 
     public $OrderId;
 
+    /// Formato: YYYY-MM-DD HH:mm:SS.fff
     public $Date;
 
     public $Amount;

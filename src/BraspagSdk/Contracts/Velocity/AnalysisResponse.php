@@ -20,11 +20,11 @@ class AnalysisResponse
 
     public function __construct()
     {
-        $this->AnalysisResult = new AnalysisResultData();
-        $this->Transaction = new TransactionData();
-        $this->ErrorDataCollection = array();
-        $this->EmailageResult = new EmailageResultData();
-        $this->CredilinkResult = new CredilinkResultData();
+//        $this->AnalysisResult = new AnalysisResultData();
+//        $this->Transaction = new TransactionData();
+//        $this->ErrorDataCollection = null;
+//        $this->EmailageResult = new EmailageResultData();
+//        $this->CredilinkResult = new CredilinkResultData();
     }
 
     public static function fromJson($json)
@@ -36,6 +36,36 @@ class AnalysisResponse
             if (property_exists(__CLASS__, $key))
                 $response->$key = $val;
 
+        return $response;
+    }
+
+    public static function fromErrorJson($json)
+    {
+        $jsonArray = json_decode($json);
+        $errorCollection = array();
+
+        foreach ($jsonArray as $key => $val)
+        {
+            $errorData = new ErrorData();
+            $errorData->Field = $jsonArray[$key]->Field;
+            $errorData->ErrorCode = $jsonArray[$key]->ErrorCode;
+            $errorData->Message = $jsonArray[$key]->Message;
+            array_push($errorCollection, $errorData);
+        }
+
+        $response = new AnalysisResponse();
+        $response->ErrorDataCollection = $errorCollection;
+        return $response;
+    }
+
+    public static function fromText($message)
+    {
+        $response = new AnalysisResponse();
+        $errorCollection = array();
+        $errorData = new ErrorData();
+        $errorData->Message = $message;
+        array_push($errorCollection, $errorData);
+        $response->ErrorDataCollection = $errorCollection;
         return $response;
     }
 }
