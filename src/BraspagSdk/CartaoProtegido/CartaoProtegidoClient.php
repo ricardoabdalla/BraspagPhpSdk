@@ -23,7 +23,7 @@ class CartaoProtegidoClient
 
     public function __construct(CartaoProtegidoClientOptions $options)
     {
-        $this->credentials = $options->credentials;
+        $this->credentials = $options->Credentials;
 
         if ($options->Environment == Environment::PRODUCTION)
             $this->url = Endpoints::CartaoProtegidoProduction;

@@ -1,16 +1,16 @@
 <?php
 
-namespace BraspagSdk\CartaoProtegido;
+namespace BraspagSdk\Velocity;
 
 use BraspagSdk\Common\ClientOptions;
-use BraspagSdk\Contracts\CartaoProtegido\MerchantCredentials;
+use BraspagSdk\Contracts\Velocity\MerchantCredentials;
 
-class CartaoProtegidoClientOptions extends ClientOptions
+class VelocityClientOptions extends ClientOptions
 {
     public $Credentials;
 
     /**
-     * CartaoProtegidoClientOptions constructor.
+     * VelocityClientOptions constructor.
      * @param $credentials
      * @param $environment
      */
