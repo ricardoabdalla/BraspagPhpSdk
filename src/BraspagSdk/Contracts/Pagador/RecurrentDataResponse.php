@@ -2,23 +2,20 @@
 
 namespace BraspagSdk\Contracts\Pagador;
 
-class SaleResponse
+class RecurrentDataResponse
 {
-    public $Customer;
-
-    public $ErrorDataCollection;
-
     public $HttpStatus;
-
-    public $MerchantOrderId;
-
-    public $Payment;
+    
+    // CustomerData
+    public $Customer;
+    
+    // RecurrentPaymentData
+    public $RecurrentPayment;
 
     public function __construct()
     {
         $this->Customer = new CustomerData();
-        $this->ErrorDataCollection = array();
-        $this->Payment = new PaymentDataResponse();
+        $this->RecurrentPayment = new RecurrentPaymentData();
     }
 
     public static function fromJson($json)
