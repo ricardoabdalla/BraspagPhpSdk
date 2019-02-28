@@ -26,4 +26,9 @@ class CreditCardData
     public $Alias;
 
     public $Avs;
+
+//    public function __construct()
+//    {
+//        $this->Avs = new AvsData();
+//    }
 }
