@@ -2,6 +2,7 @@
   "name": "braspag/braspag-php-sdk",
   "description": "SDK para integração com plataforma Braspag",
   "type": "library",
+  "license" : "MIT",
   "authors": [
     {
       "name": "Ricardo Abdalla",
