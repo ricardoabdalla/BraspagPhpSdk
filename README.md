@@ -11,8 +11,8 @@ SDK para integração simplificada nos serviços da plataforma [Braspag](http://
 ## Índice
 
 - [Features](#features)
-- [Dependências](#dependencias)
-- [Instalação](#instalacao)
+- [Dependências](#dependências)
+- [Instalação](#instalação)
 - [Exemplos de Uso](#exemplos-de-uso)
     - [Pagador](#pagador)
     - [Cartão Protegido](#cartao-protegido)
