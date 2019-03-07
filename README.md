@@ -11,6 +11,7 @@ SDK para integração simplificada nos serviços da plataforma [Braspag](http://
 ## Índice
 
 - [Features](#features)
+- [Dependências](#dependencias)
 - [Instalação](#instalacao)
 - [Exemplos de Uso](#exemplos-de-uso)
     - [Pagador](#pagador)
@@ -28,11 +29,17 @@ SDK para integração simplificada nos serviços da plataforma [Braspag](http://
 * Client para a API do Cartão Protegido (Salvar cartão, Recuperar cartão, Invalidar cartão)
 * Client para a API de análises do Velocity
 
+## Dependências
+
+* PHP >= 5.6.37
+* ext-curl
+* ext-json
+
 ## Instalação
 
 Caso já possua um arquivo `composer.json`, adicione a seguinte dependência ao seu projeto:
 
-```xml
+```
 "require": {
     "braspag/braspag-php-sdk": "*"
 }
@@ -40,13 +47,13 @@ Caso já possua um arquivo `composer.json`, adicione a seguinte dependência ao 
 
 Com a dependência adicionada ao `composer.json`, execute o comando:
 
-```xml
+```
 composer install
 ```
 
 De forma alternativa, a instalação pode ser realizada executando o comando abaixo diretamente em seu terminal:
 
-```xml
+```
 composer require braspag/braspag-php-sdk
 ```
 
@@ -157,4 +164,111 @@ $request->Payment->Instructions = "Aceitar somente até a data de vencimento.";
 
 /* Obtenção do resultado da operação */
 $response = $pagadorClient->createSale($request);
+```
+
+### Cartão Protegido
+
+Para salvar um cartão de crédito em um cofre PCI:
+
+```php
+/* Criação do Cliente Cartão Protegido */
+$credentials = new MerchantCredentials("CHAVE_DA_LOJA");
+$options = new CartaoProtegidoClientOptions($credentials, Environment::SANDBOX);
+$cartaoProtegidoClient = new CartaoProtegidoClient($options);
+
+/* Preenchimento do objeto SaveCreditCardRequest */
+$request = new SaveCreditCardRequest();
+$request->CustomerName = "Bjorn Ironside";
+$request->CustomerIdentification = "762.502.520-96";
+$request->CardHolder = "BJORN IRONSIDE";
+$request->CardExpiration = "10/2025";
+$request->CardNumber = "1000100010001000";
+
+/* Obtenção do resultado da operação */
+$response = $cartaoProtegidoClient->saveCreditCard($request);
+```
+
+Para obter os dados de um cartão de crédito previamente salvo em cofre PCI:
+
+```php
+/* Criação do Cliente Cartão Protegido */
+$credentials = new MerchantCredentials("CHAVE_DA_LOJA");
+$options = new CartaoProtegidoClientOptions($credentials, Environment::SANDBOX);
+$cartaoProtegidoClient = new CartaoProtegidoClient($options);
+
+/* Preenchimento do objeto GetCreditCardRequest */
+$request = new GetCreditCardRequest();
+$request->JustClickKey = "CREDITCARD_TOKEN";
+
+/* Obtenção do resultado da operação */
+$response = $cartaoProtegidoClient->getCreditCard($request);
+```
+
+### Velocity
+
+Análise de uma transação com o Velocity:
+
+```php
+/* Criação do Token de Acesso OAUTH via Braspag Auth */
+$authRequest = new AccessTokenRequest();
+$authRequest->GrantType = OAuthGrantType::ClientCredentials;
+$authRequest->ClientId = "CLIENT_ID";
+$authRequest->ClientSecret = "CLIENT_SECRET";
+$authRequest->Scope = "VelocityApp";
+
+$clientOptions = new ClientOptions();
+$clientOptions->Environment = Environment::SANDBOX;
+$braspagAuthClient = new BraspagAuthClient($clientOptions);
+
+/* Obtenção do Token de Acesso */
+$authResponse = $braspagAuthClient->createAccessToken($authRequest);
+
+/* Criação do Cliente Velocity */
+$credentials = new MerchantCredentials("MERCHANT_ID", $authResponse->Token);
+$options = new VelocityClientOptions($credentials);
+$velocityClient = new VelocityClient($options);
+
+/* Preenchimento do objeto AnalysisRequest */
+$transaction = new TransactionData();
+$transaction->OrderId = uniqid();
+$transaction->Date = date('Y-m-d H:i:s');
+$transaction->Amount = 1000;
+
+$card = new CardData();
+$card->Holder = "BJORN IRONSIDE";
+$card->Brand = "visa";
+$card->Number = "1000100010001000";
+$card->Expiration = "10/2025";
+
+$customer = new CustomerData();
+$customer->Name = "Bjorn Ironside";
+$customer->Identity = "76250252096";
+$customer->IpAddress = "127.0.0.1";
+$customer->Email = "bjorn.ironside@vikings.com.br";
+$customer->BirthDate = "1982-06-30";
+
+$phone = new PhoneData();
+$phone->Type = "Cellphone";
+$phone->Number = "999999999";
+$phone->DDI = "55";
+$phone->DDD = "11";
+array_push($customer->Phones, $phone);
+
+$billing = new AddressData();
+$billing->Street = "Alameda Xingu";
+$billing->Number = "512";
+$billing->Neighborhood = "Alphaville";
+$billing->City = "Barueri";
+$billing->State = "SP";
+$billing->Country = "BR";
+$billing->ZipCode = "06455-030";
+$customer->Billing = $billing;
+
+$request = new AnalysisRequest();
+$request->Transaction = $transaction;
+$request->Card = $card;
+$request->Customer = $customer;
+
+/* Obtenção do resultado da operação */
+$response = $velocityClient->performAnalysis($request);
 ```
