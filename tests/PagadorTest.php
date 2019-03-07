@@ -289,7 +289,6 @@ final class PagadorClientTest extends TestCase
         $debitCard->Brand = "Visa";
 
         $request->Payment->DebitCard = $debitCard;
-        $request->Payment->CreditCard = null;
         $request->Payment->Type = "DebitCard";
         $request->Payment->Authenticate = true;
         $request->Payment->ReturnUrl = "http://www.test.com/redirect";
@@ -313,7 +312,6 @@ final class PagadorClientTest extends TestCase
         $request->MerchantOrderId = uniqid();
 
         $request->Payment->Type = "Boleto";
-        $request->Payment->CreditCard = null;
         $request->Payment->BoletoNumber = "2017091101";
         $request->Payment->Assignor = "Braspag";
         $request->Payment->Demonstrative = "Texto demonstrativo";

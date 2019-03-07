@@ -54,7 +54,7 @@ composer require braspag/braspag-php-sdk
 
 ### Pagador
 
-Para criar uma transação com cartão de crédito:
+Para criar uma transação utilizando cartão de crédito:
 
 ```php
 /* Criação do Cliente Pagador */
@@ -84,6 +84,76 @@ $request->Payment->CreditCard->Holder = "BJORN IRONSIDE";
 $request->Payment->CreditCard->ExpirationDate = "12/2025";
 $request->Payment->CreditCard->SecurityCode = "123";
 $request->Payment->CreditCard->Brand = "visa";
+
+/* Obtenção do resultado da operação */
+$response = $pagadorClient->createSale($request);
+```
+
+Para criar uma transação utilizando cartão de débito:
+
+```php
+/* Criação do Cliente Pagador */
+$credentials = new MerchantCredentials("ID_DA_LOJA", "CHAVE_DA_LOJA");
+$options = new PagadorClientOptions($credentials, Environment::SANDBOX);
+$pagadorClient = new PagadorClient($options);
+
+/* Preenchimento do objeto SaleRequest */
+$request = new SaleRequest();
+$request->MerchantOrderId = "123456789";
+$request->Customer = new CustomerData();
+$request->Customer->Name = "Bjorn Ironside";
+$request->Customer->Identity = "762.502.520-96";
+$request->Customer->IdentityType = "CPF";
+$request->Customer->Email = "bjorn.ironside@vikings.com.br";
+$request->Payment = new PaymentDataRequest();
+$request->Payment->Provider = "Simulado";
+$request->Payment->Type = "DebitCard";
+$request->Payment->Currency = "BRL";
+$request->Payment->Country = "BRA";
+$request->Payment->Amount = 150000;
+$request->Payment->Installments = 1;
+$request->Payment->SoftDescriptor = "Braspag SDK";
+$request->Payment->ReturnUrl = "http://www.sualoja.com/url-de-retorno";
+$request->Payment->Authenticate = true;
+$request->Payment->DebitCard = new DebitCardData();
+$request->Payment->DebitCard->CardNumber = "4485623136297301";
+$request->Payment->DebitCard->Holder = "BJORN IRONSIDE";
+$request->Payment->DebitCard->ExpirationDate = "12/2025";
+$request->Payment->DebitCard->SecurityCode = "123";
+$request->Payment->DebitCard->Brand = "visa";
+
+/* Obtenção do resultado da operação */
+$response = $pagadorClient->createSale($request);
+```
+
+Para criar uma transação utilizando boleto registrado:
+
+```php
+/* Criação do Cliente Pagador */
+$credentials = new MerchantCredentials("ID_DA_LOJA", "CHAVE_DA_LOJA");
+$options = new PagadorClientOptions($credentials, Environment::SANDBOX);
+$pagadorClient = new PagadorClient($options);
+
+/* Preenchimento do objeto SaleRequest */
+$request = new SaleRequest();
+$request->MerchantOrderId = "123456789";
+$request->Customer = new CustomerData();
+$request->Customer->Name = "Bjorn Ironside";
+$request->Customer->Identity = "762.502.520-96";
+$request->Customer->IdentityType = "CPF";
+$request->Customer->Email = "bjorn.ironside@vikings.com.br";
+$request->Payment = new PaymentDataRequest();
+$request->Payment->Provider = "Simulado";
+$request->Payment->Type = "Boleto";
+$request->Payment->Currency = "BRL";
+$request->Payment->Country = "BRA";
+$request->Payment->Amount = 150000;
+$request->Payment->BoletoNumber = "2017091101";
+$request->Payment->Assignor = "Braspag";
+$request->Payment->Demonstrative = "Texto demonstrativo";
+$request->Payment->ExpirationDate = "2019-03-20";
+$request->Payment->Identification = "11017523000167";
+$request->Payment->Instructions = "Aceitar somente até a data de vencimento.";
 
 /* Obtenção do resultado da operação */
 $response = $pagadorClient->createSale($request);
