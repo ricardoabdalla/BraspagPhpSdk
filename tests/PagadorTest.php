@@ -2,6 +2,8 @@
 
 namespace BraspagSdk\Tests;
 
+use BraspagSdk\Common\Endpoints;
+use BraspagSdk\Common\Environment;
 use BraspagSdk\Contracts\Pagador\AddressData;
 use BraspagSdk\Contracts\Pagador\AvsData;
 use BraspagSdk\Contracts\Pagador\CaptureRequest;
@@ -25,7 +27,6 @@ final class PagadorClientTest extends TestCase
     public function dataProvider()
     {
         $credentials = new MerchantCredentials("33B6AC07-C48D-4F13-A5B9-D3516A378A0C", "d6Rb3OParKvLfzNrURzwcT0f1lzNazS1o19yP6Y8");
-
         $pagadorClientOptions = new PagadorClientOptions($credentials);
 
         $customer = new CustomerData();
@@ -794,6 +795,38 @@ final class PagadorClientTest extends TestCase
         $this->assertNotNull($recurrentResponse->Customer);
         $this->assertNotNull($recurrentResponse->RecurrentPayment);
         $this->assertNotEmpty($recurrentResponse->RecurrentPayment->RecurrentTransactions);
+    }
+
+    #endregion
+
+    #region General Tests
+
+    /**
+     * @test
+     */
+    public function constructor_whenEnvironmentIsProduction_returnsProductionUrls()
+    {
+        $credentials = new MerchantCredentials("33B6AC07-C48D-4F13-A5B9-D3516A378A0C", "d6Rb3OParKvLfzNrURzwcT0f1lzNazS1o19yP6Y8");
+        $options = new PagadorClientOptions($credentials, Environment::PRODUCTION);
+
+        $sut = new PagadorClient($options);
+
+        $this->assertEquals(Endpoints::PagadorApiProduction, $sut->getUrl());
+        $this->assertEquals(Endpoints::PagadorQueryApiProduction, $sut->getQueryUrl());
+    }
+
+    /**
+     * @test
+     */
+    public function constructor_whenEnvironmentIsSandbox_returnsSandboxUrls()
+    {
+        $credentials = new MerchantCredentials("33B6AC07-C48D-4F13-A5B9-D3516A378A0C", "d6Rb3OParKvLfzNrURzwcT0f1lzNazS1o19yP6Y8");
+        $options = new PagadorClientOptions($credentials, Environment::SANDBOX);
+
+        $sut = new PagadorClient($options);
+
+        $this->assertEquals(Endpoints::PagadorApiSandbox, $sut->getUrl());
+        $this->assertEquals(Endpoints::PagadorQueryApiSandbox, $sut->getQueryUrl());
     }
 
     #endregion

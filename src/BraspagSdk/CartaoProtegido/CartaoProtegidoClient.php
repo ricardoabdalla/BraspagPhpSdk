@@ -31,6 +31,14 @@ class CartaoProtegidoClient
             $this->url = Endpoints::CartaoProtegidoSandbox;
     }
 
+    function getUrl() {
+        return $this->url;
+    }
+
+    function getCredentials() {
+        return $this->credentials;
+    }
+
     function getCreditCard(GetCreditCardRequest $request, MerchantCredentials $credentials = null)
     {
         if (empty($request) || !isset($request))

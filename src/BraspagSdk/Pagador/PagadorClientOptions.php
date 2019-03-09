@@ -7,17 +7,16 @@ use BraspagSdk\Contracts\Pagador\MerchantCredentials;
 
 class PagadorClientOptions extends ClientOptions
 {
-    public $credentials;
-    public $Environment;
+    public $Credentials;
 
     /**
      * PagadorClientOptions constructor.
      * @param $credentials
-     * @param $Environment
+     * @param $environment
      */
-    public function __construct(MerchantCredentials $credentials, $Environment = null)
+    public function __construct(MerchantCredentials $credentials, $environment = null)
     {
-        $this->credentials = $credentials;
-        $this->Environment = $Environment;
+        $this->Credentials = $credentials;
+        $this->Environment = $environment;
     }
 }

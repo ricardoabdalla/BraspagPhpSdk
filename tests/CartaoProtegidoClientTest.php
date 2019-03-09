@@ -4,6 +4,7 @@ namespace BraspagSdk\Tests;
 
 use BraspagSdk\CartaoProtegido\CartaoProtegidoClient;
 use BraspagSdk\CartaoProtegido\CartaoProtegidoClientOptions;
+use BraspagSdk\Common\Endpoints;
 use BraspagSdk\Common\Environment;
 use BraspagSdk\Common\Utilities;
 use BraspagSdk\Contracts\CartaoProtegido\GetCreditCardRequest;
@@ -191,5 +192,27 @@ final class CartaoProtegidoClientTest extends TestCase
 
         $this->assertEquals(200, $response->HttpStatus);
         $this->assertNotEmpty($response->ErrorDataCollection);
+    }
+
+    /** @test */
+    public function constructor_whenEnvironmentIsProduction_returnsProductionUrl()
+    {
+        $credentials = new MerchantCredentials("106c8a0c-89a4-4063-bf50-9e6c8530593b");
+        $clientOptions = new CartaoProtegidoClientOptions($credentials, Environment::PRODUCTION);
+
+        $sut = new CartaoProtegidoClient($clientOptions);
+
+        $this->assertEquals(Endpoints::CartaoProtegidoProduction, $sut->getUrl());
+    }
+
+    /** @test */
+    public function constructor_whenEnvironmentIsSandbox_returnsSandboxUrl()
+    {
+        $credentials = new MerchantCredentials("106c8a0c-89a4-4063-bf50-9e6c8530593b");
+        $clientOptions = new CartaoProtegidoClientOptions($credentials, Environment::SANDBOX);
+
+        $sut = new CartaoProtegidoClient($clientOptions);
+
+        $this->assertEquals(Endpoints::CartaoProtegidoSandbox, $sut->getUrl());
     }
 }
