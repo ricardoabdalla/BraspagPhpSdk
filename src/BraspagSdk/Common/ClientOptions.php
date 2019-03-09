@@ -6,7 +6,12 @@ class ClientOptions
 {
     public $Environment;
 
-    function __construct()
+    /**
+     * ClientOptions constructor.
+     * @param $environment
+     */
+    public function __construct($environment = null)
     {
+        $this->Environment = $environment;
     }
 }

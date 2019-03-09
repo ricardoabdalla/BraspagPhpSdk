@@ -4,6 +4,7 @@ namespace BraspagSdk\Tests;
 
 use BraspagSdk\BraspagAuth\BraspagAuthClient;
 use BraspagSdk\Common\ClientOptions;
+use BraspagSdk\Common\Endpoints;
 use BraspagSdk\Common\Environment;
 use BraspagSdk\Common\OAuthGrantType;
 use BraspagSdk\Contracts\BraspagAuth\AccessTokenRequest;
@@ -78,8 +79,7 @@ final class VelocityTest extends TestCase
         $authRequest->ClientSecret = "mddRzd6FqXujNLygC/KxOfhOiVhlUr2kjKPsOoYHwhQ=";
         $authRequest->Scope = "VelocityApp";
 
-        $clientOptions = new ClientOptions();
-        $clientOptions->Environment = Environment::SANDBOX;
+        $clientOptions = new ClientOptions(Environment::SANDBOX);
         $authClient = new BraspagAuthClient($clientOptions);
         $authResponse = $authClient->createAccessToken($authRequest);
 
@@ -114,8 +114,7 @@ final class VelocityTest extends TestCase
         $authRequest->ClientSecret = "mddRzd6FqXujNLygC/KxOfhOiVhlUr2kjKPsOoYHwhQ=";
         $authRequest->Scope = "VelocityApp";
 
-        $clientOptions = new ClientOptions();
-        $clientOptions->Environment = Environment::SANDBOX;
+        $clientOptions = new ClientOptions(Environment::SANDBOX);
         $authClient = new BraspagAuthClient($clientOptions);
         $authResponse = $authClient->createAccessToken($authRequest);
 
@@ -152,5 +151,27 @@ final class VelocityTest extends TestCase
         $this->assertNull($response->Transaction);
         $this->assertNull($response->RequestId);
         $this->assertNotEmpty($response->ErrorDataCollection);
+    }
+
+    /** @test */
+    public function constructor_whenEnvironmentIsProduction_returnsProductionUrl()
+    {
+        $credentials = new MerchantCredentials("94E5EA52-79B0-7DBA-1867-BE7B081EDD97", "ACCESS_TOKEN");
+        $options = new VelocityClientOptions($credentials, Environment::PRODUCTION);
+
+        $sut = new VelocityClient($options);
+
+        $this->assertEquals(Endpoints::VelocityApiProduction, $sut->getUrl());
+    }
+
+    /** @test */
+    public function constructor_whenEnvironmentIsSandbox_returnsSandboxUrl()
+    {
+        $credentials = new MerchantCredentials("94E5EA52-79B0-7DBA-1867-BE7B081EDD97", "ACCESS_TOKEN");
+        $options = new VelocityClientOptions($credentials, Environment::SANDBOX);
+
+        $sut = new VelocityClient($options);
+
+        $this->assertEquals(Endpoints::VelocityApiSandbox, $sut->getUrl());
     }
 }

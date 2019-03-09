@@ -33,6 +33,14 @@ class VelocityClient
         }
     }
 
+    function getUrl() {
+        return $this->url;
+    }
+
+    function getCredentials() {
+        return $this->credentials;
+    }
+
     function performAnalysis(AnalysisRequest $request, MerchantCredentials $credentials = null)
     {
         if (empty($request))
