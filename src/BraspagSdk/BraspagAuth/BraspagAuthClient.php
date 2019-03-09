@@ -23,6 +23,10 @@ class BraspagAuthClient
             $this->url = Endpoints::BraspagAuthSandbox;
     }
 
+    function getUrl() {
+        return $this->url;
+    }
+
     function createAccessToken(AccessTokenRequest $request)
     {
         if ($request == null)

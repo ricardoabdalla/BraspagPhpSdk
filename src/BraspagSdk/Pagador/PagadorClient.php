@@ -27,7 +27,7 @@ class PagadorClient
 
     public function __construct(PagadorClientOptions $options)
     {
-        $this->credentials = $options->credentials;
+        $this->credentials = $options->Credentials;
 
         if ($options->Environment == Environment::PRODUCTION) {
             $this->url = Endpoints::PagadorApiProduction;
@@ -36,6 +36,18 @@ class PagadorClient
             $this->url = Endpoints::PagadorApiSandbox;
             $this->queryUrl = Endpoints::PagadorQueryApiSandbox;
         }
+    }
+
+    function getUrl() {
+        return $this->url;
+    }
+
+    function getQueryUrl() {
+        return $this->queryUrl;
+    }
+
+    function getCredentials() {
+        return $this->credentials;
     }
 
     function createSale(SaleRequest $request, MerchantCredentials $credentials = null)

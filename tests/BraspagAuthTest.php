@@ -4,6 +4,7 @@ namespace BraspagSdk\Tests;
 
 use BraspagSdk\BraspagAuth\BraspagAuthClient;
 use BraspagSdk\Common\ClientOptions;
+use BraspagSdk\Common\Endpoints;
 use BraspagSdk\Common\Environment;
 use BraspagSdk\Common\OAuthGrantType;
 use BraspagSdk\Contracts\BraspagAuth\AccessTokenRequest;
@@ -20,8 +21,7 @@ final class BraspagAuthTest extends TestCase
         $request->GrantType = OAuthGrantType::ClientCredentials;
         $request->Scope = "VelocityApp";
 
-        $clientOptions = new ClientOptions();
-        $clientOptions->Environment = Environment::SANDBOX;
+        $clientOptions = new ClientOptions(Environment::SANDBOX);
 
         $sut = new BraspagAuthClient($clientOptions);
         $result = $sut->createAccessToken($request);
@@ -38,8 +38,7 @@ final class BraspagAuthTest extends TestCase
         $request->GrantType = OAuthGrantType::ClientCredentials;
         $request->Scope = "VelocityApp";
 
-        $clientOptions = new ClientOptions();
-        $clientOptions->Environment = Environment::SANDBOX;
+        $clientOptions = new ClientOptions(Environment::SANDBOX);
 
         $sut = new BraspagAuthClient($clientOptions);
         $result = $sut->createAccessToken($request);
@@ -56,12 +55,43 @@ final class BraspagAuthTest extends TestCase
         $request->GrantType = OAuthGrantType::ClientCredentials;
         $request->Scope = "VelocityApp";
 
-        $clientOptions = new ClientOptions();
-        $clientOptions->Environment = Environment::SANDBOX;
+        $clientOptions = new ClientOptions(Environment::SANDBOX);
 
         $sut = new BraspagAuthClient($clientOptions);
         $result = $sut->createAccessToken($request);
         $this->assertEquals(400, $result->HttpStatus);
         $this->assertEquals("invalid_client", $result->Error);
+    }
+
+    /** @test */
+    public function constructor_whenEnvironmentIsProduction_returnsProductionUrl()
+    {
+        $request = new AccessTokenRequest();
+        $request->ClientId = "5d85902e-592a-44a9-80bb-bdda74d51bce";
+        $request->ClientSecret = "mddRzd6FqXujNLygC/KxOfhOiVhlUr2kjKPsOoYHwhQ=";
+        $request->GrantType = OAuthGrantType::ClientCredentials;
+        $request->Scope = "VelocityApp";
+
+        $clientOptions = new ClientOptions(Environment::PRODUCTION);
+
+        $sut = new BraspagAuthClient($clientOptions);
+
+        $this->assertEquals(Endpoints::BraspagAuthProduction, $sut->getUrl());
+    }
+
+    /** @test */
+    public function constructor_whenEnvironmentIsSandbox_returnsSandboxUrl()
+    {
+        $request = new AccessTokenRequest();
+        $request->ClientId = "5d85902e-592a-44a9-80bb-bdda74d51bce";
+        $request->ClientSecret = "mddRzd6FqXujNLygC/KxOfhOiVhlUr2kjKPsOoYHwhQ=";
+        $request->GrantType = OAuthGrantType::ClientCredentials;
+        $request->Scope = "VelocityApp";
+
+        $clientOptions = new ClientOptions(Environment::SANDBOX);
+
+        $sut = new BraspagAuthClient($clientOptions);
+
+        $this->assertEquals(Endpoints::BraspagAuthSandbox, $sut->getUrl());
     }
 }
