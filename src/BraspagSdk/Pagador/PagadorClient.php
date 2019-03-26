@@ -174,6 +174,8 @@ class PagadorClient
         {
             $errorResponse = new CaptureResponse();
             $errorResponse->HttpStatus = isset($statusCode) ? $statusCode : 0;
+            $errorResponse->Customer = null;
+            $errorResponse->Payment = null;
             $errorData = new ErrorData();
             $errorData->Code = "unknown_error";
             $errorData->Message = "Unknown error";
@@ -240,6 +242,8 @@ class PagadorClient
         {
             $errorResponse = new VoidResponse();
             $errorResponse->HttpStatus = isset($statusCode) ? $statusCode : 0;
+            $errorResponse->Customer = null;
+            $errorResponse->Payment = null;
             $errorData = new ErrorData();
             $errorData->Code = "unknown_error";
             $errorData->Message = "Unknown error";
@@ -304,6 +308,8 @@ class PagadorClient
         {
             $errorResponse = new SaleResponse();
             $errorResponse->HttpStatus = isset($statusCode) ? $statusCode : 0;
+            $errorResponse->Customer = null;
+            $errorResponse->Payment = null;
             $errorData = new ErrorData();
             $errorData->Code = "unknown_error";
             $errorData->Message = "Unknown error";
