@@ -96,6 +96,25 @@ final class PagadorClientTest extends TestCase
      * @param SaleRequest $request
      * @param PagadorClientOptions $options
      */
+    public function createSale_forInvalidCredentials_returns401(SaleRequest $request, PagadorClientOptions $options)
+    {
+        $request->MerchantOrderId = uniqid();
+
+        $options->Credentials->MerchantId = "99999999-9999-9999-9999-999999999999";
+        $options->Credentials->MerchantKey = "9999999999999999999999999999999999999999";
+
+        $sut = new PagadorClient($options);
+
+        $response = $sut->createSale($request);
+        $this->assertEquals(401, $response->HttpStatus);
+    }
+
+    /**
+     * @test
+     * @dataProvider dataProvider
+     * @param SaleRequest $request
+     * @param PagadorClientOptions $options
+     */
     public function createSale_forValidCreditCardWithAutomaticCapture_returnsPaymentConfirmed(SaleRequest $request, PagadorClientOptions $options)
     {
         $request->MerchantOrderId = uniqid();
