@@ -107,6 +107,8 @@ class PagadorClient
         {
             $errorResponse = new SaleResponse();
             $errorResponse->HttpStatus = isset($statusCode) ? $statusCode : 0;
+            $errorResponse->Customer = null;
+            $errorResponse->Payment = null;
             $errorData = new ErrorData();
             $errorData->Code = "unknown_error";
             $errorData->Message = "Unknown error";

@@ -107,7 +107,6 @@ final class PagadorClientTest extends TestCase
 
         $response = $sut->createSale($request);
         $this->assertEquals(401, $response->HttpStatus);
-        $this->assertEquals(TransactionStatus::Authorized, $response->Payment->Status);
     }
 
     /**
